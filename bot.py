@@ -8,7 +8,7 @@ updater = Updater(token=config.TOKEN, use_context=True)
 
 def echo(update, context):
     context.bot.send_message(chat_id=update.message.chat_id,
-                             text=update.message.text)
+                             text="Ты написал: {msg}".format(msg=update.message.text))
 
 
 echo_handler = MessageHandler(filters=Filters.text, callback=echo)
