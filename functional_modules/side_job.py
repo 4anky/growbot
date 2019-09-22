@@ -4,6 +4,13 @@ import states as state
 
 def side_job(update, context):
     context.bot.send_message(chat_id=update.message.chat_id,
-                             text="Вы нажали кнопку 'Подработка'",
-                             reply_markup=menu.show(buttons=menu.main))
-    return state.MAIN
+                             text="Вы перешли в меню 'Подработка'",
+                             reply_markup=menu.show(buttons=menu.side_job))
+    return state.SIDE_JOB
+
+
+def invite(update, context):
+    context.bot.send_message(chat_id=update.message.chat_id,
+                             text="Вы нажали кнопку 'Пригласи друга'",
+                             reply_markup=menu.show(buttons=menu.side_job))
+    return state.SIDE_JOB

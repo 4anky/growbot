@@ -15,3 +15,10 @@ def default(context, update):
                                   "Возвращаемся в 'Главное Меню'",
                              reply_markup=menu.show(buttons=menu.main))
     return state.MAIN
+
+
+def back_to_main(update, context):
+    context.bot.send_message(chat_id=update.message.chat.id,
+                             text="Вы вернулись в 'Главное Меню'",
+                             reply_markup=menu.show(buttons=menu.main))
+    return state.MAIN

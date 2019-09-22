@@ -4,6 +4,13 @@ import states as state
 
 def casino(update, context):
     context.bot.send_message(chat_id=update.message.chat_id,
-                             text="Вы нажали кнопку 'Казино'",
-                             reply_markup=menu.show(buttons=menu.main))
-    return state.MAIN
+                             text="Вы перешли в меню 'Казино'",
+                             reply_markup=menu.show(buttons=menu.casino))
+    return state.CASINO
+
+
+def bones(update, context):
+    context.bot.send_message(chat_id=update.message.chat_id,
+                             text="Вы нажали кнопку 'Кости'",
+                             reply_markup=menu.show(buttons=menu.casino))
+    return state.CASINO
