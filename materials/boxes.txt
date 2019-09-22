@@ -1,4 +1,4 @@
 names: Belladonna, Skunk, Sour Diesel, White Russian, Black Water, Original Gorilla Glue
-pictures: 
-volumes: 
-prices: 
+pictures: XS.jpg, S.jpg, M.jpg, L.jpg, XL.jpg, XXL.jpg
+volumes: 2, 4, 8, 16, 32, 64
+prices: 10, 50, 250, 1250, 6250, 31250
