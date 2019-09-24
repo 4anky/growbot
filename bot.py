@@ -1,42 +1,36 @@
 from telegram.ext import CommandHandler, ConversationHandler, Filters, MessageHandler, Updater
 
 import config
+import constants as const
 import message_filters as filters
 import states as state
 from functional_modules import casino, home, info, markets, sell_goods, side_job, utility
 
-
-fHome = filters.Home()
-fMarkets = filters.Markets()
-fSellGoods = filters.SellGoods()
-fCasino = filters.Casino()
-fSideJob = filters.SideJob()
-fInfo = filters.Info()
-
-fFarm = filters.Farm()
-fStock = filters.Stock()
-fRating = filters.Rating()
-
-fHighGrowing = filters.HighGrowing()
-
-fAgent = filters.Agent()
-fStreet = filters.Street()
-
-fBones = filters.Bones()
-
-fInvite = filters.Invite()
-
-fFAQ = filters.FAQ()
-fCommunity = filters.Community()
-fLetter = filters.Letter()
-fVersion = filters.Version()
-
-fBack = filters.Back()
+fHome = filters.MessageFilter(button=const.HOME_BUTTON)
+fMarkets = filters.MessageFilter(button=const.MARKETS_BUTTON)
+fSellGoods = filters.MessageFilter(button=const.SELL_GOODS_BUTTON)
+fCasino = filters.MessageFilter(button=const.CASINO_BUTTON)
+fSideJob = filters.MessageFilter(button=const.SIDE_JOB_BUTTON)
+fInfo = filters.MessageFilter(button=const.INFO_BUTTON)
+fFarm = filters.MessageFilter(button=const.FARM_BUTTON)
+fStock = filters.MessageFilter(button=const.STOCK_BUTTON)
+fRating = filters.MessageFilter(button=const.RATING_BUTTON)
+fHighGrowing = filters.MessageFilter(button=const.HIGH_GROWING_BUTTON)
+fAgent = filters.MessageFilter(button=const.AGENT_BUTTON)
+fStreet = filters.MessageFilter(button=const.STREET_BUTTON)
+fDice = filters.MessageFilter(button=const.DICE_BUTTON)
+fInvite = filters.MessageFilter(button=const.INVITE_BUTTON)
+fFAQ = filters.MessageFilter(button=const.FAQ_BUTTON)
+fCommunity = filters.MessageFilter(button=const.COMMUNITY_BUTTON)
+fLetter = filters.MessageFilter(button=const.LETTER_BUTTON)
+fVersion = filters.MessageFilter(button=const.VERSION_BUTTON)
+fBack = filters.MessageFilter(button=const.BACK_BUTTON)
 
 updater = Updater(token=config.TOKEN, use_context=True)
 
 conversation = ConversationHandler(
-    entry_points=[CommandHandler(command="start", callback=utility.start)],
+    entry_points=[CommandHandler(command="start", callback=utility.start),
+                  MessageHandler(filters=Filters.text, callback=utility.reload)],
     states={state.MAIN: [MessageHandler(filters=fHome, callback=home.home),
                          MessageHandler(filters=fMarkets, callback=markets.markets),
                          MessageHandler(filters=fSellGoods, callback=sell_goods.sell_goods),
@@ -56,7 +50,7 @@ conversation = ConversationHandler(
                                MessageHandler(filters=fStreet, callback=sell_goods.street),
                                MessageHandler(filters=fBack, callback=utility.back_to_main)
                                ],
-            state.CASINO: [MessageHandler(filters=fBones, callback=casino.bones),
+            state.CASINO: [MessageHandler(filters=fDice, callback=casino.bones),
                            MessageHandler(filters=fBack, callback=utility.back_to_main)
                            ],
             state.SIDE_JOB: [MessageHandler(filters=fInvite, callback=side_job.invite),

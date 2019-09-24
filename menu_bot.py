@@ -1,23 +1,24 @@
 from telegram import KeyboardButton, ReplyKeyboardMarkup
 
-back_button = "◀️Назад"
-main = (("🏠Дом", "🏬Магазины"),
-        ("💰Продать товар", "🎰Казино"),
-        ("💸Подработка", "📢Информация"))
-home = (("🌱Ферма", "📦Склад"),
-        ("🏆Рейтинг", back_button))
-markets = (("🐲HighGrowing", back_button), )
-sell_goods = (("👳🏻‍♂️Агент", "🔪Улица"),
-              (back_button, ""))
-casino = (("🎲Кости", back_button), )
-side_job = (("🙋🏼‍♂️Пригласи друга", back_button), )
-info = (("❓FAQ", "💬Сообщество"),
-        ("✉️Письмо авторам", "✅Версия игры"),
-        (back_button, ""))
+import constants as const
+
+main = ((const.HOME_BUTTON, const.MARKETS_BUTTON),
+        (const.SELL_GOODS_BUTTON, const.CASINO_BUTTON),
+        (const.SIDE_JOB_BUTTON, const.INFO_BUTTON))
+home = ((const.FARM_BUTTON, const.STOCK_BUTTON),
+        (const.RATING_BUTTON, const.BACK_BUTTON))
+markets = ((const.HIGH_GROWING_BUTTON, const.BACK_BUTTON), )
+sell_goods = ((const.AGENT_BUTTON, const.STREET_BUTTON),
+              (const.BACK_BUTTON, const.EMPTY_BUTTON))
+casino = ((const.DICE_BUTTON, const.BACK_BUTTON), )
+side_job = ((const.INVITE_BUTTON, const.BACK_BUTTON), )
+info = ((const.FAQ_BUTTON, const.COMMUNITY_BUTTON),
+        (const.LETTER_BUTTON, const.VERSION_BUTTON),
+        (const.BACK_BUTTON, const.EMPTY_BUTTON))
 
 
 def show(buttons):
-    keyboard = [[KeyboardButton(text=column[0]),
-                 KeyboardButton(text=column[1])]
+    keyboard = [[KeyboardButton(text=column[const.LEFT]),
+                 KeyboardButton(text=column[const.RIGHT])]
                 for column in buttons]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
