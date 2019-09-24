@@ -1,5 +1,7 @@
 import sqlite3
 
+import constants as const
+
 
 def create_connection(db_path):
     connect = None
@@ -15,8 +17,7 @@ def reg(db_path, telegram_id, first_name, username):
     connection = create_connection(db_path=db_path)
     cursor = connection.cursor()
     try:
-        cursor.execute(sql="INSERT OR IGNORE INTO users VALUES (?, ?, ?)",
-                       parameters=(telegram_id, first_name, username))
+        cursor.execute(sql=const.REG_QUERY, parameters=(telegram_id, first_name, username))
     except sqlite3.Error as Error:
         print(Error)
     connection.commit()

@@ -1,4 +1,5 @@
 import config
+import constants as const
 import menu_bot as menu
 import states as state
 import sql
@@ -13,14 +14,14 @@ def start(update, context):
         sql.reg(db_path=config.DB_PATH, telegram_id=telegram_id, first_name=first_name, username=username)
         context.bot.send_message(chat_id=update.message.chat.id,
                                  text="Вы перешли в Главное Меню.",
-                                 reply_markup=menu.show(buttons=menu.main))
+                                 reply_markup=menu.show(menu=const.MAIN))
     return state.MAIN
 
 
 def reload(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
                              text="Версия Игры обновилась.\nВы в Главном Меню.",
-                             reply_markup=menu.show(buttons=menu.main))
+                             reply_markup=menu.show(menu=const.MAIN))
     return state.MAIN
 
 
@@ -28,12 +29,12 @@ def default(context, update):
     context.bot.send_message(chat_id=update.message.chat.id,
                              text="Что-то пошло не так.\n"
                                   "Возвращаемся в Главное Меню.",
-                             reply_markup=menu.show(buttons=menu.main))
+                             reply_markup=menu.show(menu=const.MAIN))
     return state.MAIN
 
 
 def back_to_main(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
                              text="Вы вернулись в Главное Меню.",
-                             reply_markup=menu.show(buttons=menu.main))
+                             reply_markup=menu.show(menu=const.MAIN))
     return state.MAIN
