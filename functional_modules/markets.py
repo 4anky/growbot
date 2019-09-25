@@ -19,7 +19,16 @@ def high_growing(update, context):
                                                                       name=size["NAME"],
                                                                       mining=size["MINING"],
                                                                       price=size["PRICE"]),
-                            reply_markup=menu.high_growing_buy_button(size=size["SIZE"]),
+                            reply_markup=menu.high_growing_buy_button(text=const.BUY_BUTTON,
+                                                                      name=size["NAME"]),
                             parse_mode=ParseMode.MARKDOWN)
      for size in const.SIZES]
+    return state.MARKETS
+
+
+def buy_grow_box(update, context):
+    context.bot.send_message(chat_id=update.callback_query.message.chat.id,
+                             text="Вы решили купить *{name}*, но у нас *ПЕРЕРЫВ*. "
+                                  "Зайдите, пожалуйста, позже.".format(name=update.callback_query.data),
+                             parse_mode=ParseMode.MARKDOWN)
     return state.MARKETS

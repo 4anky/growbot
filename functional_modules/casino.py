@@ -10,7 +10,7 @@ def casino(update, context):
     return state.CASINO
 
 
-def bones(update, context):
+def dice(update, context):
     context.bot.send_message(chat_id=update.message.chat_id,
                              text="Вы нажали кнопку 'Кости'",
                              reply_markup=menu.show(menu=const.CASINO))

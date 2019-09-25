@@ -14,13 +14,13 @@ SIDE_JOB_BUTTON = "💶Подработка"
 INFO_BUTTON = "📣Информация"
 
 FARM_BUTTON = "🌱Ферма"
-STOCK_BUTTON = "📦Склад"
+BALANCE_BUTTON = "💵Баланс"
 RATING_BUTTON = "🏆Рейтинг"
 
 HIGH_GROWING_BUTTON = "🐲HighGrowing"
 
 AGENT_BUTTON = "👳🏻‍♂️Агент"
-STREET_BUTTON = "🔪Улица"
+STREET_BUTTON = "🌃Улица"
 
 DICE_BUTTON = "🎲Кости"
 
@@ -34,7 +34,7 @@ VERSION_BUTTON = "✅Версия игры"
 MAIN = ((HOME_BUTTON, MARKETS_BUTTON),
         (SELL_GOODS_BUTTON, CASINO_BUTTON),
         (SIDE_JOB_BUTTON, INFO_BUTTON))
-HOME = ((FARM_BUTTON, STOCK_BUTTON),
+HOME = ((FARM_BUTTON, BALANCE_BUTTON),
         (RATING_BUTTON, BACK_BUTTON))
 MARKETS = ((HIGH_GROWING_BUTTON, BACK_BUTTON), )
 SELL_GOODS = ((AGENT_BUTTON, STREET_BUTTON),
@@ -60,14 +60,59 @@ S = {"SIZE": "S", "PATH": "materials/S.jpg", "DESC": "Grow-box на 4 расте
 M = {"SIZE": "M", "PATH": "materials/M.jpg", "DESC": "Grow-box на 8 растений",
      "NAME": "Sour Diesel", "MINING": 1249, "PRICE": 6500}
 L = {"SIZE": "L", "PATH": "materials/L.jpg", "DESC": "Grow-box на 24 растения",
-     "NAME": "White Russian", "MINING": 3463, "PRICE": 18000}
+     "NAME": "🇷🇺White Russian", "MINING": 3463, "PRICE": 18000}
 XL = {"SIZE": "XL", "PATH": "materials/XL.jpg", "DESC": "Grow-room на 50 растений",
-      "NAME": "Black Water", "MINING": 13020, "PRICE": 65000}
+      "NAME": "🖤Black Water", "MINING": 13020, "PRICE": 65000}
 XXL = {"SIZE": "XXL", "PATH": "materials/XXL.jpg", "DESC": "Grow-room на 100 растений",
-       "NAME": "Original Gorilla Glue 4 S1", "MINING": 31250, "PRICE": 190000}
+       "NAME": "🦍Original Gorilla Glue 4 S1", "MINING": 31250, "PRICE": 190000}
 
 SIZES = [XS, S, M, L, XL, XXL]
 
 # SQL
 
-REG_QUERY = "INSERT OR IGNORE INTO users VALUES (?, ?, ?)"
+REG_USERS = "INSERT OR IGNORE INTO users VALUES (?, ?, ?)"
+REG_FARM = "INSERT OR IGNORE INTO farm VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+REG_BALANCE = "INSERT OR IGNORE INTO balance VALUES (?, ?, ?)"
+
+GET_BALANCE = "SELECT money, high FROM balance WHERE id=?"
+GET_FARM = "SELECT XS, S, M, L, XL, XXL, last_collect FROM farm WHERE id=?"
+
+# Start Properties
+
+START_GROW_BOX = 0
+START_MONEY = 220
+START_HIGH = 0
+
+# Balance
+
+BALANCE = "*" + BALANCE_BUTTON + "*\n\nНаличные: *{money}*💰\nШишек на складе: *{high}*🌳"
+
+# Farm
+
+LAST_COLLECT = 6
+FARM = "*" + FARM_BUTTON + "*\n\nЗдесь установлены купленные вами гровбоксы." \
+       " Они производят 🌳, которые вам необходимо собирать и продав" \
+       "ать. Ниже вы можете посмотреть, " \
+       "сколько 🌳 выросло в Ваших гровб" \
+       "оксах с момента последнего сбора, и собрать их" \
+       " для продажи.\n" \
+       "\n🔹 *" + XS["NAME"] + \
+       "*\nКол-во: *{XS}*🌳" \
+       "\nСозрело: *{XS_high}*\n" \
+       "\n🔹 *" + S["NAME"] + \
+       "*\nКол-во: *{S}*🌳" \
+       "\nСозрело: *{S_high}*\n"\
+       "\n🔹 *" + M["NAME"] + \
+       "*\nКол-во: *{M}*🌳" \
+       "\nСозрело: *{M_high}*\n"\
+       "\n🔹 *" + L["NAME"] + \
+       "*\nКол-во: *{L}*🌳" \
+       "\nСозрело: *{L_high}*\n"\
+       "\n🔹 *" + XL["NAME"] + \
+       "*\nКол-во: *{XL}*🌳" \
+       "\nСозрело: *{XL_high}*\n"\
+       "\n🔹 *" + XXL["NAME"] + \
+       "*\nКол-во: *{XXL}*🌳" \
+       "\nСозрело: *{XXL_high}*\n" \
+       "\nВсего: *{all_high}*🌳" \
+       "\nДата последнего сбора: *{date} UTC*"

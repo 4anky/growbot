@@ -1,4 +1,4 @@
-from telegram.ext import CommandHandler, ConversationHandler, Filters, MessageHandler, Updater
+from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandler, Filters, MessageHandler, Updater
 
 import config
 import constants as const
@@ -13,7 +13,7 @@ fCasino = filters.MessageFilter(button=const.CASINO_BUTTON)
 fSideJob = filters.MessageFilter(button=const.SIDE_JOB_BUTTON)
 fInfo = filters.MessageFilter(button=const.INFO_BUTTON)
 fFarm = filters.MessageFilter(button=const.FARM_BUTTON)
-fStock = filters.MessageFilter(button=const.STOCK_BUTTON)
+fBalance = filters.MessageFilter(button=const.BALANCE_BUTTON)
 fRating = filters.MessageFilter(button=const.RATING_BUTTON)
 fHighGrowing = filters.MessageFilter(button=const.HIGH_GROWING_BUTTON)
 fAgent = filters.MessageFilter(button=const.AGENT_BUTTON)
@@ -39,7 +39,7 @@ conversation = ConversationHandler(
                          MessageHandler(filters=fSideJob, callback=side_job.side_job)
                          ],
             state.HOME: [MessageHandler(filters=fFarm, callback=home.farm),
-                         MessageHandler(filters=fStock, callback=home.stock),
+                         MessageHandler(filters=fBalance, callback=home.balance),
                          MessageHandler(filters=fRating, callback=home.rating),
                          MessageHandler(filters=fBack, callback=utility.back_to_main)
                          ],
@@ -50,7 +50,7 @@ conversation = ConversationHandler(
                                MessageHandler(filters=fStreet, callback=sell_goods.street),
                                MessageHandler(filters=fBack, callback=utility.back_to_main)
                                ],
-            state.CASINO: [MessageHandler(filters=fDice, callback=casino.bones),
+            state.CASINO: [MessageHandler(filters=fDice, callback=casino.dice),
                            MessageHandler(filters=fBack, callback=utility.back_to_main)
                            ],
             state.SIDE_JOB: [MessageHandler(filters=fInvite, callback=side_job.invite),
@@ -66,5 +66,9 @@ conversation = ConversationHandler(
     fallbacks=[MessageHandler(filters=Filters.text, callback=utility.default)]
 )
 
+buy_grow_box_handler = CallbackQueryHandler(callback=markets.buy_grow_box,
+                                            pattern='|'.join([size["NAME"] for size in const.SIZES]))
+
+updater.dispatcher.add_handler(handler=buy_grow_box_handler)
 updater.dispatcher.add_handler(handler=conversation)
 updater.start_polling(read_latency=0.2)
