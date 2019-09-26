@@ -1,12 +1,12 @@
 from telegram import KeyboardButton, ReplyKeyboardMarkup
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-import constants as const
+import config
 
 
 def show(menu):
-    keyboard = [[KeyboardButton(text=column[const.LEFT]),
-                 KeyboardButton(text=column[const.RIGHT])]
+    keyboard = [[KeyboardButton(text=column[config.LEFT]),
+                 KeyboardButton(text=column[config.RIGHT])]
                 for column in menu]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
