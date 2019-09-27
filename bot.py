@@ -30,7 +30,8 @@ updater = Updater(token=config.TOKEN, use_context=True)
 conversation = ConversationHandler(
     entry_points=[CommandHandler(command="start", callback=utility.start),
                   MessageHandler(filters=Filters.text, callback=utility.reload)],
-    states={state.MAIN: [MessageHandler(filters=fHome, callback=home.home),
+    states={state.WAIT: [],
+            state.MAIN: [MessageHandler(filters=fHome, callback=home.home),
                          MessageHandler(filters=fMarkets, callback=markets.markets),
                          MessageHandler(filters=fSellGoods, callback=sell_goods.sell_goods),
                          MessageHandler(filters=fCasino, callback=casino.casino),
@@ -62,7 +63,7 @@ conversation = ConversationHandler(
                          MessageHandler(filters=fBack, callback=utility.back_to_main)
                          ]
             },
-    fallbacks=[MessageHandler(filters=Filters.text, callback=utility.default)]
+    fallbacks=[CommandHandler(command="start", callback=utility.default)]
 )
 
 buy_grow_box_handler = CallbackQueryHandler(callback=markets.buy_grow_box,

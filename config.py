@@ -87,6 +87,10 @@ GET_FARM = "SELECT XS, S, M, L, XL, XXL, last_collect FROM farm WHERE id=?"
 BUYING_GROW_BOX = "UPDATE farm SET {name} = {name} + 1 WHERE id=?"
 PAYING_MONEY = "UPDATE balance SET money = money - {price} WHERE id=?"
 
+WAIT_GET_USERS = "SELECT id FROM users"
+WAIT_ADD = "INSERT INTO wait VALUES (?)"
+WAIT_IS_ADD = "SELECT * FROM wait WHERE id=?"
+
 # Start Properties
 
 START_XS_GROW_BOX = 1
@@ -127,3 +131,9 @@ FARM = "*" + FARM_BUTTON + "*\n\nЗдесь установлены куплен�
        "\nСозрело: *{XXL_high}*🌳\n" \
        "\nВсего: *{all_high}*🌳" \
        "\nДата последнего сбора: *{date} UTC*"
+
+# Wait
+
+WAIT_TEXT = "Игра ещё на стадии 🛠 разработки.\n" \
+            "Не удаляйте этот чат. Когда всё " \
+            "будет готово, мы обязательно сообщим."
