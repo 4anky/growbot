@@ -11,6 +11,6 @@ def show(menu):
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
 
-def high_growing_buy_button(text, name):
-    keyboard = [[InlineKeyboardButton(text=text, callback_data=name)]]
+def inline_button(text, data):
+    keyboard = [[InlineKeyboardButton(text=text, callback_data=data)]]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)

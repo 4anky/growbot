@@ -111,3 +111,15 @@ def buying_grow_box(db_path, telegram_id, name, price):
         print(Error)
     connection.commit()
     connection.close()
+
+
+def high_to_balance(db_path, telegram_id, high):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    try:
+        cursor.execute(config.HIGH_TO_BALANCE.format(high=high), (telegram_id, ))
+        cursor.execute(config.HIGH_TO_BALANCE_CLEAR_FARM, (datetime.utcnow(), telegram_id))
+    except sqlite3.Error as Error:
+        print(Error)
+    connection.commit()
+    connection.close()

@@ -43,9 +43,27 @@ def farm(update, context):
                                                      all_high=sum(high_stats),
                                                      date=farm_data[6]
                                                      ),
-                             reply_markup=menu.show(menu=config.HOME),
+                             reply_markup=menu.inline_button(text="🌳Собрать урожай", data=str(sum(high_stats))),
                              parse_mode=ParseMode.MARKDOWN)
     return state.HOME
+
+
+def harvest(update, context):
+    high_number = int(update.callback_query.data)
+    telegram_id = update.callback_query.message.chat.id
+    if high_number:
+        sql.high_to_balance(db_path=config.DB_PATH,
+                            telegram_id=telegram_id,
+                            high=high_number)
+        context.bot.send_message(chat_id=telegram_id,
+                                 text=config.FARM_HARVEST.format(number=high_number),
+                                 parse_mode=ParseMode.MARKDOWN)
+        return state.HOME
+    else:
+        context.bot.send_message(chat_id=telegram_id,
+                                 text="❗*Нового урожая нет0*❗",
+                                 parse_mode=ParseMode.MARKDOWN)
+        return state.HOME
 
 
 def balance(update, context):

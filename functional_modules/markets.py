@@ -20,8 +20,7 @@ def high_growing(update, context):
                                                                        name=size["NAME"],
                                                                        mining=size["MINING"],
                                                                        price=size["PRICE"]),
-                            reply_markup=menu.high_growing_buy_button(text=config.BUY_BUTTON,
-                                                                      name=size["NAME"]),
+                            reply_markup=menu.inline_button(text=config.BUY_BUTTON, data=size["NAME"]),
                             parse_mode=ParseMode.MARKDOWN)
      for size in config.SIZES]
     return state.MARKETS
@@ -46,6 +45,6 @@ def buy_grow_box(update, context):
                                  parse_mode=ParseMode.MARKDOWN)
     else:
         context.bot.send_message(chat_id=update.callback_query.message.chat.id,
-                                 text="⛔️*Недостаточно средств!*",
+                                 text="⛔*Недостаточно средств!*⛔",
                                  parse_mode=ParseMode.MARKDOWN)
     return state.MARKETS

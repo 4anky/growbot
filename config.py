@@ -91,11 +91,14 @@ WAIT_GET_USERS = "SELECT id FROM users"
 WAIT_ADD = "INSERT INTO wait VALUES (?)"
 WAIT_IS_ADD = "SELECT * FROM wait WHERE id=?"
 
+HIGH_TO_BALANCE = "UPDATE balance SET high = high + {high} WHERE id=?"
+HIGH_TO_BALANCE_CLEAR_FARM = "UPDATE farm SET last_collect=? WHERE id=?"
+
 # Start Properties
 
 START_XS_GROW_BOX = 1
 START_GROW_BOX = 0
-START_MONEY = 110
+START_MONEY = 101
 START_HIGH = 0
 
 # Balance
@@ -132,8 +135,17 @@ FARM = "*" + FARM_BUTTON + "*\n\nЗдесь установлены куплен�
        "\nВсего: *{all_high}*🌳" \
        "\nДата последнего сбора: *{date} UTC*"
 
+FARM_HARVEST = "👍 *Шишки собраны!*\n\n" \
+               "Вы собрали: *{number}*🌳\n\n" \
+               "Собранный урожай вы можете" \
+               " продать за 💰 своему Агенту 👳🏻‍♂"
+
 # Wait
 
 WAIT_TEXT = "Игра ещё на стадии 🛠 разработки.\n" \
             "Не удаляйте этот чат. Когда всё " \
             "будет готово, мы обязательно сообщим."
+
+# Patterns
+
+PATTERN_HARVEST = r'[+]?\d+'

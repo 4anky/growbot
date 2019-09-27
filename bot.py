@@ -68,7 +68,9 @@ conversation = ConversationHandler(
 
 buy_grow_box_handler = CallbackQueryHandler(callback=markets.buy_grow_box,
                                             pattern='|'.join([size["NAME"] for size in config.SIZES]))
+harvest_handler = CallbackQueryHandler(callback=home.harvest, pattern=config.PATTERN_HARVEST)
 
+updater.dispatcher.add_handler(handler=harvest_handler)
 updater.dispatcher.add_handler(handler=buy_grow_box_handler)
 updater.dispatcher.add_handler(handler=conversation)
 updater.start_polling(read_latency=0.2)
