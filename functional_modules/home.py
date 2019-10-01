@@ -61,7 +61,7 @@ def harvest(update, context):
         return state.HOME
     else:
         context.bot.send_message(chat_id=telegram_id,
-                                 text="❗*Нового урожая нет0*❗",
+                                 text="❗*Нового урожая нет*❗",
                                  parse_mode=ParseMode.MARKDOWN)
         return state.HOME
 

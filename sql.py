@@ -123,3 +123,14 @@ def high_to_balance(db_path, telegram_id, high):
         print(Error)
     connection.commit()
     connection.close()
+
+
+def high_to_money(db_path, telegram_id, high, money):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    try:
+        cursor.execute(config.HIGH_TO_MONEY, (high, money, telegram_id))
+    except sqlite3.Error as Error:
+        print(Error)
+    connection.commit()
+    connection.close()

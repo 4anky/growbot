@@ -15,7 +15,7 @@ fFarm = filters.MessageFilter(button=config.FARM_BUTTON)
 fBalance = filters.MessageFilter(button=config.BALANCE_BUTTON)
 fRating = filters.MessageFilter(button=config.RATING_BUTTON)
 fHighGrowing = filters.MessageFilter(button=config.HIGH_GROWING_BUTTON)
-fAgent = filters.MessageFilter(button=config.AGENT_BUTTON)
+fDealer = filters.MessageFilter(button=config.DEALER_BUTTON)
 fStreet = filters.MessageFilter(button=config.STREET_BUTTON)
 fDice = filters.MessageFilter(button=config.DICE_BUTTON)
 fInvite = filters.MessageFilter(button=config.INVITE_BUTTON)
@@ -46,10 +46,12 @@ conversation = ConversationHandler(
             state.MARKETS: [MessageHandler(filters=fHighGrowing, callback=markets.high_growing),
                             MessageHandler(filters=fBack, callback=utility.back_to_main)
                             ],
-            state.SELL_GOODS: [MessageHandler(filters=fAgent, callback=sell_goods.agent),
+            state.SELL_GOODS: [MessageHandler(filters=fDealer, callback=sell_goods.dealer),
                                MessageHandler(filters=fStreet, callback=sell_goods.street),
                                MessageHandler(filters=fBack, callback=utility.back_to_main)
                                ],
+            state.DEALER: [MessageHandler(filters=(Filters.text & (~ fBack)), callback=sell_goods.dealer_result),
+                           MessageHandler(filters=fBack, callback=sell_goods.sell_goods)],
             state.CASINO: [MessageHandler(filters=fDice, callback=casino.dice),
                            MessageHandler(filters=fBack, callback=utility.back_to_main)
                            ],
