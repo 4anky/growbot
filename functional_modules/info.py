@@ -5,34 +5,34 @@ import states as state
 
 def info(update, context):
     context.bot.send_message(chat_id=update.message.chat_id,
-                             text="Вы перешли в меню 'Информация'",
+                             text=config.INFO_DESC,
                              reply_markup=menu.show(menu=config.INFO))
     return state.INFO
 
 
 def faq(update, context):
     context.bot.send_message(chat_id=update.message.chat_id,
-                             text="Вы нажали кнопку 'FAQ'",
+                             text=config.FAQ_DESC,
                              reply_markup=menu.show(menu=config.INFO))
     return state.INFO
 
 
 def community(update, context):
     context.bot.send_message(chat_id=update.message.chat_id,
-                             text="Вы нажали кнопку 'Сообщество'",
+                             text=config.COMMUNITY_DESC,
                              reply_markup=menu.show(menu=config.INFO))
     return state.INFO
 
 
 def letter(update, context):
     context.bot.send_message(chat_id=update.message.chat_id,
-                             text="Вы нажали кнопку 'Письмо авторам'",
+                             text=config.LETTER_DESC,
                              reply_markup=menu.show(menu=config.INFO))
     return state.INFO
 
 
 def version(update, context):
     context.bot.send_message(chat_id=update.message.chat_id,
-                             text="Вы нажали кнопку 'Версия игры'",
+                             text=config.VERSION_DESC,
                              reply_markup=menu.show(menu=config.INFO))
     return state.INFO

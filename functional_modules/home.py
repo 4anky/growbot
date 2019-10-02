@@ -1,49 +1,32 @@
-from datetime import datetime, timedelta
-
 from telegram import ParseMode
 
+from functional_modules import utility
 import config
 import menu_bot as menu
 import states as state
 import sql
 
 
-def ripening_number_score(last_collect):
-    [last_ripening] = [datetime.utcnow().replace(minute=23, second=0, microsecond=0)
-                       if datetime.utcnow().minute >= 23 else
-                       datetime.utcnow().replace(hour=datetime.utcnow().hour - 1, minute=23, second=0, microsecond=0)
-                       ]
-    return int((last_ripening - last_collect + timedelta(hours=1)).total_seconds() // 3600)
-
-
 def home(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
-                             text="Вы дома.",
+                             text=config.HOME_DESC,
                              reply_markup=menu.show(menu=config.HOME))
     return state.HOME
 
 
 def farm(update, context):
     farm_data = sql.get_farm(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
-    ripening_number = ripening_number_score(last_collect=farm_data[config.LAST_COLLECT])
-    high_stats = [high * size["MINING"] * ripening_number for high, size in zip(farm_data, config.SIZES)]
+    ripening_number = utility.ripening_number_score(last_collect=farm_data[config.LAST_COLLECT])
+    high_stats = [ripening_number * high * size["MINING"] for high, size in zip(farm_data, config.SIZES)]
+    farm_stats = "\n".join([config.FARM_STATS.format(name=sort["NAME"], number=number, mature=high)
+                            for sort, number, high in zip(config.SIZES, farm_data, high_stats)
+                            if number])
     context.bot.send_message(chat_id=update.message.from_user.id,
-                             text=config.FARM.format(XS=farm_data[0],
-                                                     XS_high=high_stats[0],
-                                                     S=farm_data[1],
-                                                     S_high=high_stats[1],
-                                                     M=farm_data[2],
-                                                     M_high=high_stats[2],
-                                                     L=farm_data[3],
-                                                     L_high=high_stats[3],
-                                                     XL=farm_data[4],
-                                                     XL_high=high_stats[4],
-                                                     XXL=farm_data[5],
-                                                     XXL_high=high_stats[5],
-                                                     all_high=sum(high_stats),
-                                                     date=farm_data[6]
-                                                     ),
-                             reply_markup=menu.inline_button(text="🌳Собрать урожай", data=str(sum(high_stats))),
+                             text=("*" + config.FARM_BUTTON + "*" +
+                                   config.FARM_DESC_START +
+                                   farm_stats +
+                                   config.FARM_DESC_END.format(all=sum(high_stats), date=farm_data[6])),
+                             reply_markup=menu.inline_button(text=config.HARVEST_INLINE, data=str(sum(high_stats))),
                              parse_mode=ParseMode.MARKDOWN)
     return state.HOME
 
@@ -61,7 +44,7 @@ def harvest(update, context):
         return state.HOME
     else:
         context.bot.send_message(chat_id=telegram_id,
-                                 text="❗*Нового урожая нет*❗",
+                                 text=config.HARVEST_ERROR,
                                  parse_mode=ParseMode.MARKDOWN)
         return state.HOME
 
@@ -77,6 +60,6 @@ def balance(update, context):
 
 def rating(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
-                             text="В эту игру ещё никто не играет.",
+                             text=config.RATING_DESC,
                              reply_markup=menu.show(menu=config.HOME))
     return state.HOME

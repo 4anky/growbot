@@ -8,7 +8,7 @@ import states as state
 
 def markets(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
-                             text="Вы перешли в меню 'Магазин'",
+                             text=config.MARKETS_DESC,
                              reply_markup=menu.show(menu=config.MARKETS))
     return state.MARKETS
 
@@ -38,13 +38,10 @@ def buy_grow_box(update, context):
                             name=grow_box["SIZE"],
                             price=str(grow_box["PRICE"]))
         context.bot.send_message(chat_id=update.callback_query.message.chat.id,
-                                 text="👍 *Успешно!*\n\n"
-                                      "*{desc}* посажена, теперь вам нужно лишь заходить на ферму "
-                                      "и собирать созревшие шишки🌳. Вы можете установить скольк"
-                                      "о угодно гровбоксов!".format(desc=grow_box["NAME"]),
+                                 text=config.HIGH_GROWING_PURCHASE.format(desc=grow_box["NAME"]),
                                  parse_mode=ParseMode.MARKDOWN)
     else:
         context.bot.send_message(chat_id=update.callback_query.message.chat.id,
-                                 text="⛔*Недостаточно средств!*⛔",
+                                 text=config.PURCHASE_ERROR,
                                  parse_mode=ParseMode.MARKDOWN)
     return state.MARKETS

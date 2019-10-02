@@ -9,20 +9,16 @@ from functional_modules import utility
 
 def sell_goods(update, context):
     context.bot.send_message(chat_id=update.message.chat_id,
-                             text="*⚖️Продажа*\n\nВы можете продать 🌳"
-                                  " двумя способами: через 👳🏻‍♂*дилера-поср"
-                                  "едника* и самостоятельно на 🌃*Улице*. Ра"
-                                  "бота с дилером имеет минимальные риски"
-                                  ", но на Улице вы можете заработать гора"
-                                  "здо больше💰!",
+                             text=config.SELL_GOODS_DESC,
                              reply_markup=menu.show(menu=config.SELL_GOODS),
                              parse_mode=ParseMode.MARKDOWN)
     return state.SELL_GOODS
 
 
 def dealer(update, context):
+    (_, high) = sql.get_balance(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
     context.bot.send_message(chat_id=update.message.chat.id,
-                             text=config.DEALER_DESC,
+                             text=config.DEALER_DESC.format(high=high),
                              reply_markup=menu.show(menu=config.BACK),
                              parse_mode=ParseMode.MARKDOWN)
     return state.DEALER
@@ -33,14 +29,14 @@ def dealer_result(update, context):
         high = int(update.message.text)
     except ValueError:
         context.bot.send_message(chat_id=update.message.chat.id,
-                                 text="Ожидается *целое положительное число*. Введите его:",
+                                 text=config.NOT_POSITIVE_NUMBER,
                                  reply_markup=menu.show(menu=config.BACK),
                                  parse_mode=ParseMode.MARKDOWN)
         return state.DEALER
     else:
         if high <= 0:
             context.bot.send_message(chat_id=update.message.chat.id,
-                                     text="Ожидается *целое положительное число*. Введите его:",
+                                     text=config.NOT_POSITIVE_NUMBER,
                                      reply_markup=menu.show(menu=config.BACK),
                                      parse_mode=ParseMode.MARKDOWN)
             return state.DEALER
@@ -51,8 +47,7 @@ def dealer_result(update, context):
                                                  field="high")
             if high > high_in_balance:
                 context.bot.send_message(chat_id=update.message.chat.id,
-                                         text="У вас есть только *{high}* шишек. "
-                                              "Введите число не более *{high}*:".format(high=high_in_balance),
+                                         text=config.NOT_ENOUGH_HIGH.format(high=high_in_balance),
                                          reply_markup=menu.show(menu=config.BACK),
                                          parse_mode=ParseMode.MARKDOWN)
                 return state.DEALER
@@ -90,6 +85,6 @@ def dealer_result(update, context):
 
 def street(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
-                             text="Вы нажали кнопку 'Улица'",
+                             text=config.STREET_DESC,
                              reply_markup=menu.show(menu=config.SELL_GOODS))
     return state.SELL_GOODS
