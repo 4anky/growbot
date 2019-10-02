@@ -1,5 +1,3 @@
-WAIT = 99999
-
 MAIN = 0
 
 HOME = 10

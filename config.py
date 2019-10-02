@@ -109,10 +109,6 @@ GET_FARM = "SELECT XS, S, M, L, XL, XXL, last_collect FROM farm WHERE id=?"
 BUYING_GROW_BOX = "UPDATE farm SET {name} = {name} + 1 WHERE id=?"
 PAYING_MONEY = "UPDATE balance SET money = money - {price} WHERE id=?"
 
-WAIT_GET_USERS = "SELECT id FROM users"
-WAIT_ADD = "INSERT INTO wait VALUES (?)"
-WAIT_IS_ADD = "SELECT * FROM wait WHERE id=?"
-
 HIGH_TO_BALANCE = "UPDATE balance SET high = high + {high} WHERE id=?"
 HIGH_TO_BALANCE_CLEAR_FARM = "UPDATE farm SET last_collect=? WHERE id=?"
 
@@ -147,12 +143,6 @@ FARM_HARVEST = "👍 *Шишки собраны!*\n\n" \
                " продать за 💰 своему 👳🏻‍♂Агенту"
 
 HARVEST_ERROR = "❗*Нового урожая нет*❗"
-
-# Wait
-
-WAIT_TEXT = "Игра ещё на стадии 🛠 разработки.\n" \
-            "Не удаляйте этот чат. Когда всё " \
-            "будет готово, мы обязательно сообщим."
 
 # Patterns
 

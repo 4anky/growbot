@@ -14,42 +14,6 @@ def create_connection(db_path):
         return connect
 
 
-def is_developer(db_path):
-    connection = create_connection(db_path=db_path)
-    cursor = connection.cursor()
-    try:
-        cursor.execute(config.WAIT_GET_USERS)
-    except sqlite3.Error as Error:
-        print(Error)
-    ids = cursor.fetchall()
-    connection.close()
-    return ids
-
-
-def add_to_waiting_users(db_path, telegram_id):
-    connection = create_connection(db_path=db_path)
-    cursor = connection.cursor()
-    try:
-        cursor.execute(config.WAIT_ADD, (telegram_id,))
-    except sqlite3.Error as Error:
-        print(Error)
-    connection.commit()
-    connection.close()
-
-
-def is_wait_user(db_path, telegram_id):
-    connection = create_connection(db_path=db_path)
-    cursor = connection.cursor()
-    try:
-        cursor.execute(config.WAIT_IS_ADD, (telegram_id,))
-    except sqlite3.Error as Error:
-        print(Error)
-    result = cursor.fetchone()
-    connection.commit()
-    connection.close()
-    return result
-
-
 def reg(db_path, telegram_id, first_name, username):
     connection = create_connection(db_path=db_path)
     cursor = connection.cursor()

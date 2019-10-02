@@ -30,8 +30,7 @@ updater = Updater(token=config.TOKEN, use_context=True)
 conversation = ConversationHandler(
     entry_points=[CommandHandler(command="start", callback=utility.start),
                   MessageHandler(filters=Filters.text, callback=utility.reload)],
-    states={state.WAIT: [],
-            state.MAIN: [MessageHandler(filters=fHome, callback=home.home),
+    states={state.MAIN: [MessageHandler(filters=fHome, callback=home.home),
                          MessageHandler(filters=fMarkets, callback=markets.markets),
                          MessageHandler(filters=fSellGoods, callback=sell_goods.sell_goods),
                          MessageHandler(filters=fCasino, callback=casino.casino),
