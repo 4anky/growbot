@@ -3,7 +3,11 @@ from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandl
 import config
 import message_filters as filters
 import states as state
-from functional_modules import casino, home, info, markets, sell_goods, side_job, utility
+from functional_modules import casino, home, info, markets, sell_goods, side_job, train, utility
+
+fTrainDesc1 = filters.MessageFilter(button=config.TRAIN_DESC_1_BUTTON)
+fTrainMarket = filters.MessageFilter(button=config.TRAIN_MARKET_BUTTON)
+fTrainDesc2 = filters.MessageFilter(button=config.TRAIN_DESC_2_BUTTON)
 
 fHome = filters.MessageFilter(button=config.HOME_BUTTON)
 fMarkets = filters.MessageFilter(button=config.MARKETS_BUTTON)
@@ -29,8 +33,21 @@ updater = Updater(token=config.TOKEN, use_context=True)
 
 conversation = ConversationHandler(
     entry_points=[CommandHandler(command="start", callback=utility.start),
-                  MessageHandler(filters=Filters.text, callback=utility.reload)],
-    states={state.MAIN: [MessageHandler(filters=fHome, callback=home.home),
+                  MessageHandler(filters=Filters.text, callback=utility.reload)
+                  ],
+    states={state.TRAIN_DESC_1: [MessageHandler(filters=fTrainDesc1, callback=train.to_market),
+                                 CommandHandler(command="start", callback=train.to_market)
+                                 ],
+            state.TRAIN_MARKET: [MessageHandler(filters=fTrainMarket, callback=train.to_desc_2),
+                                 CommandHandler(command="start", callback=train.to_desc_2)
+                                 ],
+            state.TRAIN_DESC_2: [MessageHandler(filters=fTrainDesc2, callback=train.to_nick),
+                                 CommandHandler(command="start", callback=train.to_nick)
+                                 ],
+            state.TRAIN_NICK: [MessageHandler(filters=Filters.text, callback=train.nick_valid),
+                               CommandHandler(command="start", callback=train.nick_valid)
+                               ],
+            state.MAIN: [MessageHandler(filters=fHome, callback=home.home),
                          MessageHandler(filters=fMarkets, callback=markets.markets),
                          MessageHandler(filters=fSellGoods, callback=sell_goods.sell_goods),
                          MessageHandler(filters=fCasino, callback=casino.casino),

@@ -14,15 +14,38 @@ def create_connection(db_path):
         return connect
 
 
-def reg(db_path, telegram_id, first_name, username):
+def reg(db_path, telegram_id):
     connection = create_connection(db_path=db_path)
     cursor = connection.cursor()
     try:
-        cursor.execute(config.REG_USERS, (telegram_id, first_name, username))
+        cursor.execute(config.REG_USERS, (telegram_id, str(telegram_id)))
+        cursor.execute(config.REG_BALANCE, (telegram_id, config.START_MONEY, config.START_HIGH, config.START_CHIP))
         cursor.execute(config.REG_FARM,
-                       (telegram_id, config.START_XS_GROW_BOX, config.START_GROW_BOX, config.START_GROW_BOX,
+                       (telegram_id, config.START_GROW_BOX, config.START_GROW_BOX, config.START_GROW_BOX,
                         config.START_GROW_BOX, config.START_GROW_BOX, config.START_GROW_BOX, datetime.utcnow()))
-        cursor.execute(config.REG_BALANCE, (telegram_id, config.START_MONEY, config.START_HIGH))
+    except sqlite3.Error as Error:
+        print(Error)
+    connection.commit()
+    connection.close()
+
+
+def is_reg(db_path, telegram_id):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    try:
+        cursor.execute("SELECT * FROM users WHERE id = ?", (telegram_id, ))
+    except sqlite3.Error as Error:
+        print(Error)
+    result = cursor.fetchone()
+    connection.close()
+    return result
+
+
+def update_nick(db_path, telegram_id, nick):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    try:
+        cursor.execute("UPDATE users SET nick = ? WHERE id = ?", (nick, telegram_id))
     except sqlite3.Error as Error:
         print(Error)
     connection.commit()
@@ -98,3 +121,13 @@ def high_to_money(db_path, telegram_id, high, money):
         print(Error)
     connection.commit()
     connection.close()
+
+
+# def delete_my_data_from_game(db_path, telegram_id):
+#     connection = create_connection(db_path=db_path)
+#     cursor = connection.cursor()
+#     cursor.execute("DELETE FROM users WHERE id = {id}".format(id=telegram_id))
+#     cursor.execute("DELETE FROM balance WHERE id = {id}".format(id=telegram_id))
+#     cursor.execute("DELETE FROM farm WHERE id = {id}".format(id=telegram_id))
+#     connection.commit()
+#     connection.close()

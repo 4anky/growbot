@@ -16,7 +16,7 @@ def sell_goods(update, context):
 
 
 def dealer(update, context):
-    (_, high) = sql.get_balance(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
+    (_, high, _) = sql.get_balance(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
     context.bot.send_message(chat_id=update.message.chat.id,
                              text=config.DEALER_DESC.format(high=high),
                              reply_markup=menu.show(menu=config.BACK),

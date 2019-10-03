@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from functional_modules import train
 import config
 import menu_bot as menu
 import states as state
@@ -31,12 +32,12 @@ def money_transfer(high):
 
 
 def start(update, context):
-    telegram_id = update.message.from_user.id
-    if not update.message.from_user.is_bot:
+    if sql.is_reg(db_path=config.DB_PATH, telegram_id=update.message.from_user.id) is None:
         sql.reg(db_path=config.DB_PATH,
-                telegram_id=telegram_id,
-                first_name=update.message.from_user.first_name,
-                username=update.message.from_user.username)
+                telegram_id=update.message.from_user.id)
+        train.to_desc_1(update, context)
+        return state.TRAIN_DESC_1
+    elif not update.message.from_user.is_bot:
         context.bot.send_message(chat_id=update.message.chat.id,
                                  text=config.MENU_DESC,
                                  reply_markup=menu.show(menu=config.MAIN))

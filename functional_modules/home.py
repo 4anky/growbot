@@ -50,9 +50,9 @@ def harvest(update, context):
 
 
 def balance(update, context):
-    (money, high) = sql.get_balance(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
+    (money, high, chip) = sql.get_balance(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
     context.bot.send_message(chat_id=update.message.chat.id,
-                             text=config.BALANCE.format(money=money, high=high),
+                             text=config.BALANCE.format(money=money, high=high, chip=chip),
                              reply_markup=menu.show(menu=config.HOME),
                              parse_mode=ParseMode.MARKDOWN)
     return state.HOME
