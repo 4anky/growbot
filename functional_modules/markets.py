@@ -1,5 +1,6 @@
 from telegram import ParseMode
 
+from functional_modules import utility
 import config
 import menu_bot as menu
 import sql
@@ -29,14 +30,27 @@ def high_growing(update, context):
 def buy_grow_box(update, context):
     money = sql.get_from_table(db_path=config.DB_PATH,
                                telegram_id=update.callback_query.message.chat.id,
-                               field="money",
-                               table="balance")
+                               table="balance",
+                               field="money")
     [grow_box] = [size for size in config.SIZES if size["NAME"] == update.callback_query.data]
     if money >= grow_box["PRICE"]:
+        ripening_number = utility.ripening_number_score(
+            last_collect=sql.get_from_table(db_path=config.DB_PATH,
+                                            telegram_id=update.callback_query.message.chat.id,
+                                            table="farm",
+                                            field="last_collect")
+        )
+        print("ripening_number", ripening_number)
+        sql.update_farm_amendments(db_path=config.DB_PATH,
+                                   telegram_id=update.callback_query.message.chat.id,
+                                   size=grow_box["SIZE"],
+                                   value=ripening_number * grow_box["MINING"])
+        print("2")
         sql.buying_grow_box(db_path=config.DB_PATH,
                             telegram_id=update.callback_query.message.chat.id,
                             name=grow_box["SIZE"],
                             price=str(grow_box["PRICE"]))
+        print("3")
         context.bot.send_message(chat_id=update.callback_query.message.chat.id,
                                  text=config.HIGH_GROWING_PURCHASE.format(desc=grow_box["NAME"]),
                                  parse_mode=ParseMode.MARKDOWN)

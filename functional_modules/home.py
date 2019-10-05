@@ -16,8 +16,10 @@ def home(update, context):
 
 def farm(update, context):
     farm_data = sql.get_farm(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
+    farm_amendments_data = sql.get_farm_amendments(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
     ripening_number = utility.ripening_number_score(last_collect=farm_data[config.LAST_COLLECT])
-    high_stats = [ripening_number * high * size["MINING"] for high, size in zip(farm_data, config.SIZES)]
+    high_stats = [ripening_number * high * size["MINING"] - amendment
+                  for high, size, amendment in zip(farm_data, config.SIZES, farm_amendments_data)]
     farm_stats = "\n".join([config.FARM_STATS.format(name=sort["NAME"], number=number, mature=high)
                             for sort, number, high in zip(config.SIZES, farm_data, high_stats)
                             if number])
@@ -38,6 +40,7 @@ def harvest(update, context):
         sql.high_to_balance(db_path=config.DB_PATH,
                             telegram_id=telegram_id,
                             high=high_number)
+        sql.to_zero_farm_amendments(db_path=config.DB_PATH, telegram_id=telegram_id)
         context.bot.send_message(chat_id=telegram_id,
                                  text=config.FARM_HARVEST.format(number=high_number),
                                  parse_mode=ParseMode.MARKDOWN)
