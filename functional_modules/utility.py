@@ -33,8 +33,7 @@ def money_transfer(high):
 
 def start(update, context):
     if sql.is_reg(db_path=config.DB_PATH, telegram_id=update.message.from_user.id) is None:
-        sql.reg(db_path=config.DB_PATH,
-                telegram_id=update.message.from_user.id)
+        sql.reg(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
         train.to_desc_1(update, context)
         return state.TRAIN_DESC_1
     elif not update.message.from_user.is_bot:

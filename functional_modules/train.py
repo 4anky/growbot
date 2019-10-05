@@ -46,19 +46,25 @@ def to_desc_2(update, context):
 def to_nick(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
                              text=config.TRAIN_NICK_TEXT,
-                             reply_markup=None,
+                             reply_markup=menu.no_menu(),
                              parse_mode=ParseMode.MARKDOWN)
     return state.TRAIN_NICK
 
 
 def nick_valid(update, context):
     if check_nick(nickname=update.message.text):
-        sql.update_nick(db_path=config.DB_PATH, telegram_id=update.message.chat.id, nick=update.message.text)
-        context.bot.send_message(chat_id=update.message.chat.id,
-                                 text=config.TRAIN_NICK_VALID_TEXT,
-                                 reply_markup=menu.show(menu=config.MAIN),
-                                 parse_mode=ParseMode.MARKDOWN)
-        return state.MAIN
+        if sql.update_nick(db_path=config.DB_PATH, nick=update.message.text, telegram_id=update.message.chat.id):
+            context.bot.send_message(chat_id=update.message.chat.id,
+                                     text=config.TRAIN_NICK_VALID_TEXT,
+                                     reply_markup=menu.show(menu=config.MAIN),
+                                     parse_mode=ParseMode.MARKDOWN)
+            return state.MAIN
+        else:
+            context.bot.send_message(chat_id=update.message.chat.id,
+                                     text=config.TRAIN_NICK_NOT_VALID_TEXT,
+                                     reply_markup=menu.no_menu(),
+                                     parse_mode=ParseMode.MARKDOWN)
+            return state.TRAIN_NICK
     else:
         context.bot.send_message(chat_id=update.message.chat.id,
                                  text=config.TRAIN_NICK_ERROR_TEXT,

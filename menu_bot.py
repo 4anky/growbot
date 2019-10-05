@@ -1,4 +1,4 @@
-from telegram import KeyboardButton, ReplyKeyboardMarkup
+from telegram import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 import config
@@ -14,3 +14,7 @@ def show(menu):
 def inline_button(text, data):
     keyboard = [[InlineKeyboardButton(text=text, callback_data=data)]]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+def no_menu():
+    return ReplyKeyboardRemove()

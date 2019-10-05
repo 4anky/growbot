@@ -8,10 +8,9 @@ def create_connection(db_path):
     connect = None
     try:
         connect = sqlite3.connect(database=db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        return connect
     except sqlite3.Error as Error:
         print(Error)
-        return connect
+    return connect
 
 
 def reg(db_path, telegram_id):
@@ -25,8 +24,9 @@ def reg(db_path, telegram_id):
                         config.START_GROW_BOX, config.START_GROW_BOX, config.START_GROW_BOX, datetime.utcnow()))
     except sqlite3.Error as Error:
         print(Error)
-    connection.commit()
-    connection.close()
+    finally:
+        connection.commit()
+        connection.close()
 
 
 def is_reg(db_path, telegram_id):
@@ -41,15 +41,19 @@ def is_reg(db_path, telegram_id):
     return result
 
 
-def update_nick(db_path, telegram_id, nick):
+def update_nick(db_path, nick, telegram_id):
     connection = create_connection(db_path=db_path)
     cursor = connection.cursor()
     try:
         cursor.execute("UPDATE users SET nick = ? WHERE id = ?", (nick, telegram_id))
-    except sqlite3.Error as Error:
-        print(Error)
-    connection.commit()
-    connection.close()
+    except sqlite3.IntegrityError:
+        result = False
+    else:
+        result = True
+    finally:
+        connection.commit()
+        connection.close()
+    return result
 
 
 def get_balance(db_path, telegram_id):
@@ -96,8 +100,9 @@ def buying_grow_box(db_path, telegram_id, name, price):
         cursor.execute(config.PAYING_MONEY.format(price=price), (telegram_id, ))
     except sqlite3.Error as Error:
         print(Error)
-    connection.commit()
-    connection.close()
+    finally:
+        connection.commit()
+        connection.close()
 
 
 def high_to_balance(db_path, telegram_id, high):
@@ -108,8 +113,9 @@ def high_to_balance(db_path, telegram_id, high):
         cursor.execute(config.HIGH_TO_BALANCE_CLEAR_FARM, (datetime.utcnow(), telegram_id))
     except sqlite3.Error as Error:
         print(Error)
-    connection.commit()
-    connection.close()
+    finally:
+        connection.commit()
+        connection.close()
 
 
 def high_to_money(db_path, telegram_id, high, money):
@@ -119,8 +125,9 @@ def high_to_money(db_path, telegram_id, high, money):
         cursor.execute(config.HIGH_TO_MONEY, (high, money, telegram_id))
     except sqlite3.Error as Error:
         print(Error)
-    connection.commit()
-    connection.close()
+    finally:
+        connection.commit()
+        connection.close()
 
 
 # def delete_my_data_from_game(db_path, telegram_id):
