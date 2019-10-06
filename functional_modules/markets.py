@@ -40,17 +40,14 @@ def buy_grow_box(update, context):
                                             table="farm",
                                             field="last_collect")
         )
-        print("ripening_number", ripening_number)
         sql.update_farm_amendments(db_path=config.DB_PATH,
                                    telegram_id=update.callback_query.message.chat.id,
                                    size=grow_box["SIZE"],
                                    value=ripening_number * grow_box["MINING"])
-        print("2")
         sql.buying_grow_box(db_path=config.DB_PATH,
                             telegram_id=update.callback_query.message.chat.id,
                             name=grow_box["SIZE"],
                             price=str(grow_box["PRICE"]))
-        print("3")
         context.bot.send_message(chat_id=update.callback_query.message.chat.id,
                                  text=config.HIGH_GROWING_PURCHASE.format(desc=grow_box["NAME"]),
                                  parse_mode=ParseMode.MARKDOWN)

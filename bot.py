@@ -18,6 +18,8 @@ fInfo = filters.MessageFilter(button=config.INFO_BUTTON)
 fFarm = filters.MessageFilter(button=config.FARM_BUTTON)
 fBalance = filters.MessageFilter(button=config.BALANCE_BUTTON)
 fRating = filters.MessageFilter(button=config.RATING_BUTTON)
+fRatingMoney = filters.MessageFilter(button=config.RATING_MONEY_BUTTON)
+fRatingHarvest = filters.MessageFilter(button=config.RATING_HARVEST_BUTTON)
 fHighGrowing = filters.MessageFilter(button=config.HIGH_GROWING_BUTTON)
 fDealer = filters.MessageFilter(button=config.DEALER_BUTTON)
 fStreet = filters.MessageFilter(button=config.STREET_BUTTON)
@@ -59,6 +61,10 @@ conversation = ConversationHandler(
                          MessageHandler(filters=fRating, callback=home.rating),
                          MessageHandler(filters=fBack, callback=utility.back_to_main)
                          ],
+            state.RATING: [MessageHandler(filters=fRatingMoney, callback=home.rating_money),
+                           MessageHandler(filters=fRatingHarvest, callback=home.rating_harvest),
+                           MessageHandler(filters=fBack, callback=home.home)
+                           ],
             state.MARKETS: [MessageHandler(filters=fHighGrowing, callback=markets.high_growing),
                             MessageHandler(filters=fBack, callback=utility.back_to_main)
                             ],

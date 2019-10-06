@@ -45,7 +45,7 @@ ERROR_MESSAGE = "Возвращаемся в Главное Меню."
 LEFT = 0
 RIGHT = 1
 
-BACK_BUTTON = "◀️Назад"
+BACK_BUTTON = "◀Назад"
 EMPTY_BUTTON = ""
 
 HOME_BUTTON = "🏡Дом"
@@ -59,18 +59,21 @@ FARM_BUTTON = "🌱Ферма"
 BALANCE_BUTTON = "💵Баланс"
 RATING_BUTTON = "🏆Рейтинг"
 
+RATING_MONEY_BUTTON = "🏅Богачи💰"
+RATING_HARVEST_BUTTON = "🏅Добытчики🌳"
+
 HIGH_GROWING_BUTTON = "🐲HighGrowing"
 
-DEALER_BUTTON = "👳🏻‍♂️Дилер"
+DEALER_BUTTON = "👳🏻‍♂Дилер"
 STREET_BUTTON = "🌃Улица"
 
 DICE_BUTTON = "🎲Кости"
 
-INVITE_BUTTON = "🙋🏼‍♂️Пригласи друга"
+INVITE_BUTTON = "🙋🏼‍♂Пригласи друга"
 
 FAQ_BUTTON = "❓FAQ"
 COMMUNITY_BUTTON = "💬Сообщество"
-LETTER_BUTTON = "✉️Письмо авторам"
+LETTER_BUTTON = "✉Письмо авторам"
 VERSION_BUTTON = "✅Версия игры"
 
 HARVEST_INLINE = "🌳Собрать урожай"
@@ -84,6 +87,8 @@ MAIN = ((HOME_BUTTON, MARKETS_BUTTON),
         (SIDE_JOB_BUTTON, INFO_BUTTON))
 HOME = ((FARM_BUTTON, BALANCE_BUTTON),
         (RATING_BUTTON, BACK_BUTTON))
+RATING = ((RATING_MONEY_BUTTON, RATING_HARVEST_BUTTON),
+          (BACK_BUTTON, EMPTY_BUTTON))
 MARKETS = ((HIGH_GROWING_BUTTON, BACK_BUTTON),)
 SELL_GOODS = ((DEALER_BUTTON, STREET_BUTTON),
               (BACK_BUTTON, EMPTY_BUTTON))
@@ -142,18 +147,25 @@ DB_PATH = "data/data.db"
 REG_USERS = "INSERT OR IGNORE INTO users VALUES (?, ?)"
 REG_BALANCE = "INSERT OR IGNORE INTO balance VALUES (?, ?, ?, ?)"
 REG_FARM = "INSERT OR IGNORE INTO farm VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+REG_FARM_AMENDMENTS = "INSERT OR IGNORE INTO farm_amendments VALUES (?, ?, ?, ?, ?, ?, ?)"
 
-GET_BALANCE = "SELECT money, high, chip FROM balance WHERE id=?"
-GET_FROM_TABLE = "SELECT {field} FROM {table} WHERE id=?"
-GET_FARM = "SELECT XS, S, M, L, XL, XXL, last_collect FROM farm WHERE id=?"
+GET_BALANCE = "SELECT money, high, chip FROM balance WHERE id = ?"
+GET_FROM_TABLE = "SELECT {field} FROM {table} WHERE id = ?"
+GET_FARM = "SELECT XS, S, M, L, XL, XXL, last_collect FROM farm WHERE id = ?"
+GET_FARM_AMENDMENTS = "SELECT XS, S, M, L, XL, XXL FROM farm_amendments WHERE id = ?"
+GET_RATING = "SELECT users.nick, balance.{param} " \
+             "FROM users JOIN balance ON users.id = balance.id " \
+             "ORDER BY {param} DESC LIMIT 3"
+IS_REG = "SELECT * FROM users WHERE id = ?"
 
-BUYING_GROW_BOX = "UPDATE farm SET {name} = {name} + 1 WHERE id=?"
-PAYING_MONEY = "UPDATE balance SET money = money - {price} WHERE id=?"
-
-HIGH_TO_BALANCE = "UPDATE balance SET high = high + {high} WHERE id=?"
-HIGH_TO_BALANCE_CLEAR_FARM = "UPDATE farm SET last_collect=? WHERE id=?"
-
-HIGH_TO_MONEY = "UPDATE balance SET high=high-?, money=money+? WHERE id=?"
+UPDATE_NICK = "UPDATE users SET nick = ? WHERE id = ?"
+TO_ZERO_FARM_AMENDMENTS = "UPDATE farm_amendments SET XS = 0, S = 0, M = 0, L = 0, XL = 0, XXL = 0 WHERE id = ?"
+UPDATE_FARM_AMENDMENTS = "UPDATE farm_amendments SET {size} = {size} + {value} WHERE id = ?"
+BUYING_GROW_BOX = "UPDATE farm SET {name} = {name} + 1 WHERE id = ?"
+PAYING_MONEY = "UPDATE balance SET money = money - {price} WHERE id = ?"
+HIGH_TO_BALANCE = "UPDATE balance SET high = high + {high}, harvest_sum = harvest_sum + {high} WHERE id = ?"
+HIGH_TO_BALANCE_CLEAR_FARM = "UPDATE farm SET last_collect = ? WHERE id = ?"
+HIGH_TO_MONEY = "UPDATE balance SET high = high - ?, money = money + ? WHERE id = ?"
 
 # Start Properties
 
@@ -173,7 +185,7 @@ HIGH_ON_STOCK = "Шишек на складе: *{high}*🌳"
 # Farm
 
 LAST_COLLECT = 6
-RIPENING = {"MINUTE": 15}
+RIPENING = {"MINUTE": 23}
 FARM_DESC_START = "\n\nЗдесь установлены купленные вами гровбоксы. " \
                   "В них созревают 🌳, которые вам необходимо " \
                   "собирать и продавать. Ниже вы можете посмотреть" \
@@ -230,7 +242,11 @@ DICE_DESC = "Вы нажали кнопку 'Кости'"
 
 # Rating
 
-RATING_DESC = "В эту игру ещё никто не играет."
+RATING_DESC = RATING_BUTTON.join("**") + "\n\nЗдесь Вы можете увидеть рейтинг игроков.\nВыберите категорию:"
+RATING_MONEY_TEXT = "🥇🥈🥉\n*Рейтинг* игроков с самой *жирной котлетой* на кармане:\n\n"
+RATING_MONEY_LINE = "👑 *{name}*: {number} 💰"
+RATING_HARVEST_SUM_LINE = "👑 *{name}*: {number} 🌳"
+RATING_HARVEST_SUM_TEXT = "🥇🥈🥉\n*Рейтинг* игроков с самой крупной *суммарной 🌳 добычей* за всю историю:\n\n"
 
 # See goods
 

@@ -64,5 +64,28 @@ def balance(update, context):
 def rating(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
                              text=config.RATING_DESC,
-                             reply_markup=menu.show(menu=config.HOME))
-    return state.HOME
+                             reply_markup=menu.show(menu=config.RATING),
+                             parse_mode=ParseMode.MARKDOWN)
+    return state.RATING
+
+
+def rating_money(update, context):
+    top = sql.get_rating(db_path=config.DB_PATH, param="money")
+    context.bot.send_message(chat_id=update.message.chat.id,
+                             text=(config.RATING_MONEY_TEXT +
+                                   "\n".join(config.RATING_MONEY_LINE.format(name=nick, number=money)
+                                             for (nick, money) in top)),
+                             reply_markup=menu.show(menu=config.RATING),
+                             parse_mode=ParseMode.MARKDOWN)
+    return state.RATING
+
+
+def rating_harvest(update, context):
+    top = sql.get_rating(db_path=config.DB_PATH, param="harvest_sum")
+    context.bot.send_message(chat_id=update.message.chat.id,
+                             text=(config.RATING_HARVEST_SUM_TEXT +
+                                   "\n".join(config.RATING_HARVEST_SUM_LINE.format(name=nick, number=harvest_sum)
+                                             for (nick, harvest_sum) in top)),
+                             reply_markup=menu.show(menu=config.RATING),
+                             parse_mode=ParseMode.MARKDOWN)
+    return state.RATING

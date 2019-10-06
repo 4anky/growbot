@@ -22,7 +22,7 @@ def reg(db_path, telegram_id):
         cursor.execute(config.REG_FARM,
                        (telegram_id, config.START_GROW_BOX, config.START_GROW_BOX, config.START_GROW_BOX,
                         config.START_GROW_BOX, config.START_GROW_BOX, config.START_GROW_BOX, datetime.utcnow()))
-        cursor.execute("INSERT OR IGNORE INTO farm_amendments VALUES (?, ?, ?, ?, ?, ?, ?)",
+        cursor.execute(config.REG_FARM_AMENDMENTS,
                        (telegram_id, config.START_GROW_BOX, config.START_GROW_BOX, config.START_GROW_BOX,
                         config.START_GROW_BOX, config.START_GROW_BOX, config.START_GROW_BOX))
     except sqlite3.Error as Error:
@@ -36,7 +36,7 @@ def is_reg(db_path, telegram_id):
     connection = create_connection(db_path=db_path)
     cursor = connection.cursor()
     try:
-        cursor.execute("SELECT * FROM users WHERE id = ?", (telegram_id, ))
+        cursor.execute(config.IS_REG, (telegram_id, ))
     except sqlite3.Error as Error:
         print(Error)
     result = cursor.fetchone()
@@ -48,7 +48,7 @@ def update_nick(db_path, nick, telegram_id):
     connection = create_connection(db_path=db_path)
     cursor = connection.cursor()
     try:
-        cursor.execute("UPDATE users SET nick = ? WHERE id = ?", (nick, telegram_id))
+        cursor.execute(config.UPDATE_NICK, (nick, telegram_id))
     except sqlite3.IntegrityError:
         result = False
     else:
@@ -99,7 +99,7 @@ def get_farm_amendments(db_path, telegram_id):
     connection = create_connection(db_path=db_path)
     cursor = connection.cursor()
     try:
-        cursor.execute("SELECT XS, S, M, L, XL, XXL FROM farm_amendments WHERE id = ?", (telegram_id,))
+        cursor.execute(config.GET_FARM_AMENDMENTS, (telegram_id,))
     except sqlite3.Error as Error:
         print(Error)
     result = cursor.fetchone()
@@ -111,9 +111,7 @@ def to_zero_farm_amendments(db_path, telegram_id):
     connection = create_connection(db_path=db_path)
     cursor = connection.cursor()
     try:
-        cursor.execute("UPDATE farm_amendments "
-                       "SET XS = 0, S = 0, M = 0, L = 0, XL = 0, XXL = 0 "
-                       "WHERE id = ?", (telegram_id,))
+        cursor.execute(config.TO_ZERO_FARM_AMENDMENTS, (telegram_id,))
     except sqlite3.Error as Error:
         print(Error)
     else:
@@ -126,9 +124,7 @@ def update_farm_amendments(db_path, telegram_id, size, value):
     connection = create_connection(db_path=db_path)
     cursor = connection.cursor()
     try:
-        cursor.execute("UPDATE farm_amendments "
-                       "SET {size} = {size} + {value} "
-                       "WHERE id = ?".format(size=size, value=value), (telegram_id,))
+        cursor.execute(config.UPDATE_FARM_AMENDMENTS.format(size=size, value=value), (telegram_id,))
     except sqlite3.Error as Error:
         print(Error)
     else:
@@ -173,6 +169,19 @@ def high_to_money(db_path, telegram_id, high, money):
     finally:
         connection.commit()
         connection.close()
+
+
+def get_rating(db_path, param):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    try:
+        cursor.execute(config.GET_RATING.format(param=param))
+    except sqlite3.Error as Error:
+        print(Error)
+    finally:
+        result = cursor.fetchall()
+        connection.close()
+        return result
 
 
 def delete_my_data_from_game(db_path, telegram_id):
