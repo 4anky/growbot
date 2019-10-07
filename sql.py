@@ -182,13 +182,3 @@ def get_rating(db_path, param):
         result = cursor.fetchall()
         connection.close()
         return result
-
-
-def delete_my_data_from_game(db_path, telegram_id):
-    connection = create_connection(db_path=db_path)
-    cursor = connection.cursor()
-    cursor.execute("DELETE FROM users WHERE id = {id}".format(id=telegram_id))
-    cursor.execute("DELETE FROM balance WHERE id = {id}".format(id=telegram_id))
-    cursor.execute("DELETE FROM farm WHERE id = {id}".format(id=telegram_id))
-    connection.commit()
-    connection.close()

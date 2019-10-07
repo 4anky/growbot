@@ -23,6 +23,8 @@ fRatingHarvest = filters.MessageFilter(button=config.RATING_HARVEST_BUTTON)
 fHighGrowing = filters.MessageFilter(button=config.HIGH_GROWING_BUTTON)
 fDealer = filters.MessageFilter(button=config.DEALER_BUTTON)
 fStreet = filters.MessageFilter(button=config.STREET_BUTTON)
+fCentre = filters.MessageFilter(button=config.CENTRE_BUTTON)
+fOutskirts = filters.MessageFilter(button=config.OUTSKIRTS_BUTTON)
 fDice = filters.MessageFilter(button=config.DICE_BUTTON)
 fInvite = filters.MessageFilter(button=config.INVITE_BUTTON)
 fFAQ = filters.MessageFilter(button=config.FAQ_BUTTON)
@@ -69,11 +71,19 @@ conversation = ConversationHandler(
                             MessageHandler(filters=fBack, callback=utility.back_to_main)
                             ],
             state.SELL_GOODS: [MessageHandler(filters=fDealer, callback=sell_goods.dealer),
-                               MessageHandler(filters=fStreet, callback=sell_goods.street),
+                               MessageHandler(filters=fStreet, callback=sell_goods.street_enter_high),
                                MessageHandler(filters=fBack, callback=utility.back_to_main)
                                ],
             state.DEALER: [MessageHandler(filters=(Filters.text & (~ fBack)), callback=sell_goods.dealer_result),
-                           MessageHandler(filters=fBack, callback=sell_goods.sell_goods)],
+                           MessageHandler(filters=fBack, callback=sell_goods.sell_goods)
+                           ],
+            state.STREET_ENTER_HIGH: [MessageHandler(filters=(Filters.text & (~ fBack)),
+                                                     callback=sell_goods.street_choice_place),
+                                      MessageHandler(filters=fBack, callback=sell_goods.sell_goods)
+                                      ],
+            state.STREET_CHOICE_PLACE: [MessageHandler(filters=(fCentre | fOutskirts), callback=sell_goods.street),
+                                        MessageHandler(filters=fBack, callback=sell_goods.street_enter_high)
+                                        ],
             state.CASINO: [MessageHandler(filters=fDice, callback=casino.dice),
                            MessageHandler(filters=fBack, callback=utility.back_to_main)
                            ],

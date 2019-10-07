@@ -83,8 +83,55 @@ def dealer_result(update, context):
                 return state.SELL_GOODS
 
 
-def street(update, context):
+def street_enter_high(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
-                             text=config.STREET_DESC,
-                             reply_markup=menu.show(menu=config.SELL_GOODS))
-    return state.SELL_GOODS
+                             text=config.STREET_ENTER_HIGH_TEXT,
+                             reply_markup=menu.show(menu=config.BACK),
+                             parse_mode=ParseMode.MARKDOWN)
+    return state.STREET_ENTER_HIGH
+
+
+def street_choice_place(update, context):
+    try:
+        high = int(update.message.text)
+    except ValueError:
+        context.bot.send_message(chat_id=update.message.chat.id,
+                                 text=config.STREET_NOT_EXPECTED_NUMBER,
+                                 reply_markup=menu.show(menu=config.BACK),
+                                 parse_mode=ParseMode.MARKDOWN)
+        return state.STREET_ENTER_HIGH
+    else:
+        if high < config.MIN_HIGH_FOR_STREET:
+            context.bot.send_message(chat_id=update.message.chat.id,
+                                     text=config.STREET_NOT_EXPECTED_NUMBER,
+                                     reply_markup=menu.show(menu=config.BACK),
+                                     parse_mode=ParseMode.MARKDOWN)
+            return state.STREET_ENTER_HIGH
+        else:
+            high_in_balance = sql.get_from_table(db_path=config.DB_PATH,
+                                                 telegram_id=update.message.chat.id,
+                                                 table="balance",
+                                                 field="high")
+            if high > high_in_balance:
+                context.bot.send_message(chat_id=update.message.chat.id,
+                                         text=config.NOT_ENOUGH_HIGH.format(high=high_in_balance),
+                                         reply_markup=menu.show(menu=config.BACK),
+                                         parse_mode=ParseMode.MARKDOWN)
+                return state.STREET_ENTER_HIGH
+            else:
+                context.user_data[update.message.chat.id] = high
+                context.bot.send_message(chat_id=update.message.chat.id,
+                                         text=config.STREET_CHOICE_PLACE,
+                                         reply_markup=menu.show(menu=config.STREET_PLACES),
+                                         parse_mode=ParseMode.MARKDOWN)
+                return state.STREET_CHOICE_PLACE
+
+
+def street(update, context):
+    high = context.user_data[update.message.chat.id]
+    context.bot.send_message(chat_id=update.message.chat.id,
+                             text=("Вы выбрали {choice} "
+                                   + "и на кармане у Вас {high}🌳").format(choice=update.message.text, high=high),
+                             reply_markup=menu.show(menu=config.STREET_PLACES),
+                             parse_mode=ParseMode.MARKDOWN)
+    return state.STREET_CHOICE_PLACE
