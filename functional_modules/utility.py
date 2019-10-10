@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from random import uniform
 
 from functional_modules import train
 import config
@@ -29,6 +30,20 @@ def money_transfer(high):
                  % config.BID_2["HIGH"] // config.BID_1["HIGH"])
 
     return sum(pack * bid["PAY"] for pack, bid in zip(packs, config.BIDS[::-1]))
+
+
+def street_exchange(high, price):
+    return (high // (config.MIN_HIGH_FOR_STREET // 10) * 100,
+            high % (config.MIN_HIGH_FOR_STREET // 10),
+            high // (config.MIN_HIGH_FOR_STREET // 10) * (price // 10))
+
+
+def money_for_escape(money):
+    return int(money * uniform(a=1, b=10) // 100)
+
+
+def money_retention(money):
+    return int(money * 1.03)
 
 
 def start(update, context):

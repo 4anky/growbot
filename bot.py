@@ -25,6 +25,8 @@ fDealer = filters.MessageFilter(button=config.DEALER_BUTTON)
 fStreet = filters.MessageFilter(button=config.STREET_BUTTON)
 fCentre = filters.MessageFilter(button=config.CENTRE_BUTTON)
 fOutskirts = filters.MessageFilter(button=config.OUTSKIRTS_BUTTON)
+fBribe = filters.MessageFilter(button=config.BRIBE_BUTTON)
+fEscape = filters.MessageFilter(button=config.ESCAPE_BUTTON)
 fDice = filters.MessageFilter(button=config.DICE_BUTTON)
 fInvite = filters.MessageFilter(button=config.INVITE_BUTTON)
 fFAQ = filters.MessageFilter(button=config.FAQ_BUTTON)
@@ -34,6 +36,7 @@ fVersion = filters.MessageFilter(button=config.VERSION_BUTTON)
 fBack = filters.MessageFilter(button=config.BACK_BUTTON)
 
 updater = Updater(token=config.TOKEN, use_context=True)
+job_queue = updater.job_queue
 
 conversation = ConversationHandler(
     entry_points=[CommandHandler(command="start", callback=utility.start),
@@ -72,7 +75,8 @@ conversation = ConversationHandler(
                             ],
             state.SELL_GOODS: [MessageHandler(filters=fDealer, callback=sell_goods.dealer),
                                MessageHandler(filters=fStreet, callback=sell_goods.street_enter_high),
-                               MessageHandler(filters=fBack, callback=utility.back_to_main)
+                               MessageHandler(filters=fBack, callback=utility.back_to_main),
+                               CommandHandler(command="start", callback=sell_goods.to_sell_goods)
                                ],
             state.DEALER: [MessageHandler(filters=(Filters.text & (~ fBack)), callback=sell_goods.dealer_result),
                            MessageHandler(filters=fBack, callback=sell_goods.sell_goods)
@@ -81,9 +85,18 @@ conversation = ConversationHandler(
                                                      callback=sell_goods.street_choice_place),
                                       MessageHandler(filters=fBack, callback=sell_goods.sell_goods)
                                       ],
-            state.STREET_CHOICE_PLACE: [MessageHandler(filters=(fCentre | fOutskirts), callback=sell_goods.street),
+            state.STREET_CHOICE_PLACE: [MessageHandler(filters=(fCentre | fOutskirts),
+                                                       callback=sell_goods.street,
+                                                       pass_job_queue=True),
                                         MessageHandler(filters=fBack, callback=sell_goods.street_enter_high)
                                         ],
+            state.STREET_DETENTION: [MessageHandler(filters=fBribe, callback=sell_goods.bribe),
+                                     MessageHandler(filters=fEscape, callback=sell_goods.escape),
+                                     CommandHandler(command="start", callback=sell_goods.detention_notify)
+                                     ],
+            state.STREET_RETENTION: [MessageHandler(filters=fBribe, callback=sell_goods.bribe_after_retention),
+                                     CommandHandler(command="start", callback=sell_goods.retention_notify)
+                                     ],
             state.CASINO: [MessageHandler(filters=fDice, callback=casino.dice),
                            MessageHandler(filters=fBack, callback=utility.back_to_main)
                            ],

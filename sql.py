@@ -166,8 +166,9 @@ def high_to_money(db_path, telegram_id, high, money):
         cursor.execute(config.HIGH_TO_MONEY, (high, money, telegram_id))
     except sqlite3.Error as Error:
         print(Error)
-    finally:
+    else:
         connection.commit()
+    finally:
         connection.close()
 
 
@@ -182,3 +183,29 @@ def get_rating(db_path, param):
         result = cursor.fetchall()
         connection.close()
         return result
+
+
+def bribe(db_path, telegram_id, money, high):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    try:
+        cursor.execute(config.BRIBE, (money, high, telegram_id))
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        connection.commit()
+    finally:
+        connection.close()
+
+
+def escape(db_path, telegram_id, money):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    try:
+        cursor.execute(config.ESCAPE, (money, telegram_id))
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        connection.commit()
+    finally:
+        connection.close()
