@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from random import uniform
 
+from telegram import ParseMode
+
 from functional_modules import train
 import config
 import menu_bot as menu
@@ -54,26 +56,30 @@ def start(update, context):
     elif not update.message.from_user.is_bot:
         context.bot.send_message(chat_id=update.message.chat.id,
                                  text=config.MENU_DESC,
-                                 reply_markup=menu.show(menu=config.MAIN))
+                                 reply_markup=menu.show(menu=config.MAIN),
+                                 parse_mode=ParseMode.MARKDOWN)
         return state.MAIN
 
 
 def reload(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
                              text=config.MENU_RELOAD,
-                             reply_markup=menu.show(menu=config.MAIN))
+                             reply_markup=menu.show(menu=config.MAIN),
+                             parse_mode=ParseMode.MARKDOWN)
     return state.MAIN
 
 
 def default(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
                              text=config.ERROR_MESSAGE,
-                             reply_markup=menu.show(menu=config.MAIN))
+                             reply_markup=menu.show(menu=config.MAIN),
+                             parse_mode=ParseMode.MARKDOWN)
     return state.MAIN
 
 
 def back_to_main(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
                              text=config.BACK_TO_MENU_DESC,
-                             reply_markup=menu.show(menu=config.MAIN))
+                             reply_markup=menu.show(menu=config.MAIN),
+                             parse_mode=ParseMode.MARKDOWN)
     return state.MAIN

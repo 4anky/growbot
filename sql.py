@@ -18,7 +18,9 @@ def reg(db_path, telegram_id):
     cursor = connection.cursor()
     try:
         cursor.execute(config.REG_USERS, (telegram_id, str(telegram_id)))
-        cursor.execute(config.REG_BALANCE, (telegram_id, config.START_MONEY, config.START_HIGH, config.START_CHIP))
+        cursor.execute(config.REG_BALANCE,
+                       (telegram_id, config.START_MONEY, config.START_HIGH, config.START_CHIP, config.START_HARVEST_SUM)
+                       )
         cursor.execute(config.REG_FARM,
                        (telegram_id, config.START_GROW_BOX, config.START_GROW_BOX, config.START_GROW_BOX,
                         config.START_GROW_BOX, config.START_GROW_BOX, config.START_GROW_BOX, datetime.utcnow()))
