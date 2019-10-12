@@ -1,6 +1,7 @@
 # Bot
 
-TOKEN = "TOKEN"
+TOKEN_PATH = "materials/token.txt"
+TOKEN = open(file=TOKEN_PATH, mode='r').read()
 
 # Train
 
