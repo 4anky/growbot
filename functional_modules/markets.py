@@ -10,7 +10,8 @@ import states as state
 def markets(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
                              text=config.MARKETS_DESC,
-                             reply_markup=menu.show(menu=config.MARKETS))
+                             reply_markup=menu.show(menu=config.MARKETS),
+                             parse_mode=ParseMode.MARKDOWN)
     return state.MARKETS
 
 

@@ -211,3 +211,34 @@ def escape(db_path, telegram_id, money):
         connection.commit()
     finally:
         connection.close()
+
+
+def get_dev_id(db_path):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    result = []
+    try:
+        cursor.execute(config.GET_DEV_ID)
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        for line in cursor.fetchall():
+            result.append(line[0])
+    finally:
+        connection.close()
+        return result
+
+
+def get_players_number(db_path):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    result = 0
+    try:
+        cursor.execute(config.GET_PLAYERS_NUMBER)
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        result = cursor.fetchone()[result]
+    finally:
+        connection.close()
+        return result

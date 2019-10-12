@@ -3,7 +3,7 @@ from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandl
 import config
 import message_filters as filters
 import states as state
-from functional_modules import casino, home, info, markets, sell_goods, side_job, train, utility
+from functional_modules import casino, home, info, markets, sell_goods, side_job, train, utility, dev
 
 fTrainDesc1 = filters.MessageFilter(button=config.TRAIN_DESC_1_BUTTON)
 fTrainMarket = filters.MessageFilter(button=config.TRAIN_MARKET_BUTTON)
@@ -108,7 +108,11 @@ conversation = ConversationHandler(
                          MessageHandler(filters=fLetter, callback=info.letter),
                          MessageHandler(filters=fVersion, callback=info.version),
                          MessageHandler(filters=fBack, callback=utility.back_to_main)
-                         ]
+                         ],
+            state.LETTER: [MessageHandler(filters=((Filters.text | (~ Filters.text)) & (~ fBack)),
+                                          callback=info.send_letter),
+                           MessageHandler(filters=fBack, callback=info.info)
+                           ],
             },
     fallbacks=[CommandHandler(command="start", callback=utility.default)]
 )
@@ -118,7 +122,13 @@ query_handlers = {
     "harvest": CallbackQueryHandler(callback=home.harvest, pattern=config.PATTERN_HARVEST)
 }
 
+dev_commands = {
+   "players_number": CommandHandler(command="_players_number", callback=dev.players_number)
+}
+
 for handler in query_handlers.values():
+    updater.dispatcher.add_handler(handler=handler)
+for handler in dev_commands.values():
     updater.dispatcher.add_handler(handler=handler)
 updater.dispatcher.add_handler(handler=conversation)
 updater.start_polling(read_latency=0.2)

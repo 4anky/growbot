@@ -10,7 +10,8 @@ import sql
 def home(update, context):
     context.bot.send_message(chat_id=update.message.chat.id,
                              text=config.HOME_DESC,
-                             reply_markup=menu.show(menu=config.HOME))
+                             reply_markup=menu.show(menu=config.HOME),
+                             parse_mode=ParseMode.MARKDOWN)
     return state.HOME
 
 
