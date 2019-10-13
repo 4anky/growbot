@@ -5,8 +5,7 @@ import config
 
 
 def show(menu):
-    keyboard = [[KeyboardButton(text=column[config.LEFT]),
-                 KeyboardButton(text=column[config.RIGHT])]
+    keyboard = [[KeyboardButton(text=column[config.LEFT]), KeyboardButton(text=column[config.RIGHT])]
                 for column in menu]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 

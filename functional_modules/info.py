@@ -6,44 +6,30 @@ import sql
 import states as state
 
 
-def info(update, context):
-    context.bot.send_message(chat_id=update.message.chat_id,
-                             text=config.INFO_DESC,
-                             reply_markup=menu.show(menu=config.INFO),
-                             parse_mode=ParseMode.MARKDOWN)
+def info(update, _):
+    update.message.reply_markdown(text=config.INFO_DESC, reply_markup=menu.show(menu=config.INFO))
     return state.INFO
 
 
-def faq(update, context):
-    context.bot.send_message(chat_id=update.message.chat_id,
-                             text=config.FAQ_DESC,
-                             reply_markup=menu.show(menu=config.INFO),
-                             parse_mode=ParseMode.MARKDOWN)
+def faq(update, _):
+    update.message.reply_markdown(text=config.FAQ_DESC, reply_markup=menu.show(menu=config.INFO),)
     return state.INFO
 
 
-def community(update, context):
-    context.bot.send_message(chat_id=update.message.chat_id,
-                             text=config.COMMUNITY_DESC,
-                             reply_markup=menu.show(menu=config.INFO))
+def community(update, _):
+    update.message.reply_text(text=config.COMMUNITY_DESC, reply_markup=menu.show(menu=config.INFO))
     return state.INFO
 
 
-def letter(update, context):
-    context.bot.send_message(chat_id=update.message.chat_id,
-                             text=config.LETTER_DESC,
-                             reply_markup=menu.show(menu=config.BACK),
-                             parse_mode=ParseMode.MARKDOWN)
+def letter(update, _):
+    update.message.reply_markdown(text=config.LETTER_DESC, reply_markup=menu.show(menu=config.BACK))
     return state.LETTER
 
 
 def send_letter(update, context):
     text = update.message.text
     if len(text) > config.LETTER_MAX_LEN:
-        context.bot.send_message(chat_id=update.message.chat.id,
-                                 text=config.ERROR_LETTER,
-                                 reply_markup=menu.show(menu=config.BACK),
-                                 parse_mode=ParseMode.MARKDOWN)
+        update.message.reply_markdown(text=config.ERROR_LETTER, reply_markup=menu.show(menu=config.BACK))
         return state.LETTER
     else:
         developers = sql.get_dev_id(db_path=config.DB_PATH)
@@ -59,16 +45,10 @@ def send_letter(update, context):
                                          parse_mode=ParseMode.MARKDOWN)
             except TelegramError:
                 continue
-        context.bot.send_message(chat_id=update.message.chat.id,
-                                 text=config.LETTER_SEND,
-                                 reply_markup=menu.show(menu=config.INFO),
-                                 parse_mode=ParseMode.MARKDOWN)
+        update.message.reply_markdown(text=config.LETTER_SEND, reply_markup=menu.show(menu=config.INFO))
         return state.INFO
 
 
-def version(update, context):
-    context.bot.send_message(chat_id=update.message.chat_id,
-                             text=config.VERSION_DESC,
-                             reply_markup=menu.show(menu=config.INFO),
-                             parse_mode=ParseMode.MARKDOWN)
+def version(update, _):
+    update.message.reply_markdown(text=config.VERSION_DESC, reply_markup=menu.show(menu=config.INFO))
     return state.INFO

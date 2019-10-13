@@ -7,11 +7,8 @@ import states as state
 import sql
 
 
-def home(update, context):
-    context.bot.send_message(chat_id=update.message.chat.id,
-                             text=config.HOME_DESC,
-                             reply_markup=menu.show(menu=config.HOME),
-                             parse_mode=ParseMode.MARKDOWN)
+def home(update, _):
+    update.message.reply_markdown(text=config.HOME_DESC, reply_markup=menu.show(menu=config.HOME))
     return state.HOME
 
 
@@ -25,10 +22,10 @@ def farm(update, context):
                             for sort, number, high in zip(config.SIZES, farm_data, high_stats)
                             if number])
     context.bot.send_message(chat_id=update.message.from_user.id,
-                             text=("*" + config.FARM_BUTTON + "*" +
-                                   config.FARM_DESC_START +
-                                   farm_stats +
-                                   config.FARM_DESC_END.format(all=sum(high_stats), date=farm_data[6])),
+                             text=(config.FARM_BUTTON.join("**")
+                                   + config.FARM_DESC_START
+                                   + farm_stats
+                                   + config.FARM_DESC_END.format(all=sum(high_stats), date=farm_data[6])),
                              reply_markup=menu.inline_button(text=config.HARVEST_INLINE, data=str(sum(high_stats))),
                              parse_mode=ParseMode.MARKDOWN)
     return state.HOME
@@ -38,55 +35,44 @@ def harvest(update, context):
     high_number = int(update.callback_query.data)
     telegram_id = update.callback_query.message.chat.id
     if high_number:
-        sql.high_to_balance(db_path=config.DB_PATH,
-                            telegram_id=telegram_id,
-                            high=high_number)
+        sql.high_to_balance(
+            db_path=config.DB_PATH, telegram_id=telegram_id, high=high_number)
         sql.to_zero_farm_amendments(db_path=config.DB_PATH, telegram_id=telegram_id)
-        context.bot.send_message(chat_id=telegram_id,
-                                 text=config.FARM_HARVEST.format(number=high_number),
-                                 parse_mode=ParseMode.MARKDOWN)
+        context.bot.send_message(
+            chat_id=telegram_id, text=config.FARM_HARVEST.format(number=high_number), parse_mode=ParseMode.MARKDOWN)
         return state.HOME
     else:
-        context.bot.send_message(chat_id=telegram_id,
-                                 text=config.HARVEST_ERROR,
-                                 parse_mode=ParseMode.MARKDOWN)
+        context.bot.send_message(
+            chat_id=telegram_id, text=config.HARVEST_ERROR, parse_mode=ParseMode.MARKDOWN)
         return state.HOME
 
 
-def balance(update, context):
+def balance(update, _):
     (money, high, chip) = sql.get_balance(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
-    context.bot.send_message(chat_id=update.message.chat.id,
-                             text=config.BALANCE.format(money=money, high=high, chip=chip),
-                             reply_markup=menu.show(menu=config.HOME),
-                             parse_mode=ParseMode.MARKDOWN)
+    update.message.reply_markdown(
+        text=config.BALANCE.format(money=money, high=high, chip=chip), reply_markup=menu.show(menu=config.HOME))
     return state.HOME
 
 
-def rating(update, context):
-    context.bot.send_message(chat_id=update.message.chat.id,
-                             text=config.RATING_DESC,
-                             reply_markup=menu.show(menu=config.RATING),
-                             parse_mode=ParseMode.MARKDOWN)
+def rating(update, _):
+    update.message.reply_markdown(text=config.RATING_DESC, reply_markup=menu.show(menu=config.RATING))
     return state.RATING
 
 
-def rating_money(update, context):
+def rating_money(update, _):
     top = sql.get_rating(db_path=config.DB_PATH, param="money")
-    context.bot.send_message(chat_id=update.message.chat.id,
-                             text=(config.RATING_MONEY_TEXT +
-                                   "\n".join(config.RATING_MONEY_LINE.format(name=nick, number=money)
-                                             for (nick, money) in top)),
-                             reply_markup=menu.show(menu=config.RATING),
-                             parse_mode=ParseMode.MARKDOWN)
+    update.message.reply_markdown(
+        text=(config.RATING_MONEY_TEXT
+              + "\n".join(config.RATING_MONEY_LINE.format(name=nick, number=money) for (nick, money) in top)),
+        reply_markup=menu.show(menu=config.RATING))
     return state.RATING
 
 
-def rating_harvest(update, context):
+def rating_harvest(update, _):
     top = sql.get_rating(db_path=config.DB_PATH, param="harvest_sum")
-    context.bot.send_message(chat_id=update.message.chat.id,
-                             text=(config.RATING_HARVEST_SUM_TEXT +
-                                   "\n".join(config.RATING_HARVEST_SUM_LINE.format(name=nick, number=harvest_sum)
-                                             for (nick, harvest_sum) in top)),
-                             reply_markup=menu.show(menu=config.RATING),
-                             parse_mode=ParseMode.MARKDOWN)
+    update.message.reply_markdown(
+        text=(config.RATING_HARVEST_SUM_TEXT
+              + "\n".join(config.RATING_HARVEST_SUM_LINE.format(name=nick, number=harvest_sum)
+                          for (nick, harvest_sum) in top)),
+        reply_markup=menu.show(menu=config.RATING))
     return state.RATING
