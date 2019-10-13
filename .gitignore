@@ -25,3 +25,5 @@ venv.bak/
 .git/
 *.db
 *.txt
+*.sh
+
