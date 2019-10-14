@@ -5,7 +5,7 @@ telegram game bot
 Following bash scripts can be found in growbot source path. To start using these scripts your current working directory should be growbot project path.
 
 To start server:
- - nohup sh start.sh >/dev/null 2>&1 &
+ - nohup ./start.sh 1>/dev/null 2>/dev/null &
 
 To stop server:
  - ./stop.sh
