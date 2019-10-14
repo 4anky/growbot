@@ -50,5 +50,5 @@ def send_letter(update, context):
 
 
 def version(update, _):
-    update.message.reply_markdown(text=config.VERSION_DESC, reply_markup=menu.show(menu=config.INFO))
+    update.message.reply_markdown(text=config.VERSION, reply_markup=menu.show(menu=config.INFO))
     return state.INFO
