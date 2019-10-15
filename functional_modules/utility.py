@@ -32,9 +32,9 @@ def money_transfer(high):
 
 
 def street_exchange(high, price):
-    return (high // (config.MIN_HIGH_FOR_STREET // 10) * 100,
-            high % (config.MIN_HIGH_FOR_STREET // 10),
-            high // (config.MIN_HIGH_FOR_STREET // 10) * (price // 10))
+    return (high // (config.MIN_HIGH_FOR_STREET // 5) * 100,
+            high % (config.MIN_HIGH_FOR_STREET // 5),
+            high // (config.MIN_HIGH_FOR_STREET // 5) * (price // 10))
 
 
 def money_for_escape(money):
