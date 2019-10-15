@@ -29,6 +29,7 @@ fBribe = filters.MessageFilter(button=config.BRIBE_BUTTON)
 fEscape = filters.MessageFilter(button=config.ESCAPE_BUTTON)
 fDice = filters.MessageFilter(button=config.DICE_BUTTON)
 fInvite = filters.MessageFilter(button=config.INVITE_BUTTON)
+fPayment = filters.MessageFilter(button=config.PAYMENT_BUTTON)
 fFAQ = filters.MessageFilter(button=config.FAQ_BUTTON)
 fCommunity = filters.MessageFilter(button=config.COMMUNITY_BUTTON)
 fLetter = filters.MessageFilter(button=config.LETTER_BUTTON)
@@ -103,6 +104,8 @@ conversation = ConversationHandler(
             state.SIDE_JOB: [MessageHandler(filters=fInvite, callback=side_job.invite),
                              MessageHandler(filters=fBack, callback=utility.back_to_main)
                              ],
+            state.INVITE: [MessageHandler(filters=fPayment, callback=side_job.invite_payment),
+                           MessageHandler(filters=fBack, callback=side_job.side_job)],
             state.INFO: [MessageHandler(filters=fFAQ, callback=info.faq),
                          MessageHandler(filters=fCommunity, callback=info.community),
                          MessageHandler(filters=fLetter, callback=info.letter),

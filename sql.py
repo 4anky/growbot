@@ -80,7 +80,9 @@ def get_from_table(db_path, telegram_id, table, field):
         cursor.execute(config.GET_FROM_TABLE.format(field=field, table=table), (telegram_id,))
     except sqlite3.Error as Error:
         print(Error)
-    result = cursor.fetchone()[0]
+    # [result] = [cursor.fetchone()[0] if cursor.fetchone()[0] is not None else None]
+    answer = cursor.fetchone()
+    [result] = [answer[0] if answer is not None else answer]
     connection.close()
     return result
 
@@ -242,3 +244,45 @@ def get_players_number(db_path):
     finally:
         connection.close()
         return result
+
+
+def add_referral(db_path, referrer, referral):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    try:
+        cursor.execute(config.ADD_REFERRAL, (referrer, referral, 0))
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        connection.commit()
+    finally:
+        connection.close()
+
+
+def get_completed_referrals(db_path, referrer):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    result = None
+    try:
+        cursor.execute(config.GET_COMPLETED_REFERRALS, (referrer,))
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        result = cursor.fetchall()
+    finally:
+        connection.close()
+    return result
+
+
+def add_completed_referral(db_path, referrer, referral):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    try:
+        cursor.execute(config.UPDATE_REF_SYSTEM, (referral,))
+        cursor.execute(config.REFERRAL_TO_MONEY, (config.PRICE_FOR_REFERRAL, referrer))
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        connection.commit()
+    finally:
+        connection.close()

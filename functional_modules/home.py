@@ -34,19 +34,22 @@ def farm(update, context):
 def harvest(update, context):
     high_number = int(update.callback_query.data)
     telegram_id = update.callback_query.message.chat.id
-    message_id = update.callback_query.message.message_id
-    if high_number:
+    ripening_number = utility.ripening_number_score(last_collect=sql.get_from_table(
+        db_path=config.DB_PATH, telegram_id=telegram_id, table="farm", field="last_collect"))
+    if high_number and ripening_number:
         sql.high_to_balance(
             db_path=config.DB_PATH, telegram_id=telegram_id, high=high_number)
         sql.to_zero_farm_amendments(db_path=config.DB_PATH, telegram_id=telegram_id)
         context.bot.edit_message_text(text=config.FARM_HARVEST.format(number=high_number),
                                       chat_id=telegram_id,
-                                      message_id=message_id,
+                                      message_id=update.callback_query.message.message_id,
                                       parse_mode=ParseMode.MARKDOWN)
         return state.HOME
     else:
-        context.bot.edit_message_text(
-            text=config.HARVEST_ERROR, chat_id=telegram_id, message_id=message_id, parse_mode=ParseMode.MARKDOWN)
+        context.bot.edit_message_text(text=config.HARVEST_ERROR,
+                                      chat_id=telegram_id,
+                                      message_id=update.callback_query.message.message_id,
+                                      parse_mode=ParseMode.MARKDOWN)
         return state.HOME
 
 

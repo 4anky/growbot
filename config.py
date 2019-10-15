@@ -3,8 +3,8 @@
 TOKEN_PATH = "materials/token.txt"
 TOKEN = open(file=TOKEN_PATH, mode='r').read()
 VERSION = ("🌳*Weed Grow*🌳\n_v0.1.3._\n\n"
-           + "• Исправлена ошибка бесконечного сбора урожая.\n"
-           + "• Добавлен просмотр версии игры в меню.")
+           + "• Введена реферальная система;\n"
+           + "• Окончательно исправлена ошибка бесконечного сбора урожая.")
 
 # Train
 
@@ -17,7 +17,7 @@ TRAIN_DESC_1_TEXT = ("*⚠Главное⚠*\n\nВ этой игре Вы раз
                      + "времени объяснять! Жми на 🐲 и покупай свою первую установку для выращивания!")
 TRAIN_DESC_2_TEXT = ("*🤙Успешно*\n\nПоздравляю, Вы приобрели свой первый Grow-box. Вы уже в деле! У Вас дома "
                      + "оборудована *🌱Ферма*, там можете отслеживать количество созревших 🌳 шишек и собирать "
-                     + "урожай для продажи.\n\n")
+                     + "урожай для продажи.")
 TRAIN_NICK_TEXT = ("*📝 Название компании*\n\nВаша 🏭*Компания* пока никак не называется. Вы можете придумать для "
                    + "нее абсолютно любое название, состоящее из латинских букв и цифр.\n\n📌 Список требований к "
                    + "названию:\n1. Латинский алфавит: *A-Z, a-z;*\n2. Цифры: *0-9*;\n3. Длина названия: от *5* до "
@@ -71,6 +71,7 @@ ESCAPE_BUTTON = "🏃🏿‍♂Сбежать"
 DICE_BUTTON = "🎲Кости"
 
 INVITE_BUTTON = "🙋🏼‍♂Пригласи друга"
+PAYMENT_BUTTON = "💲Получить оплату"
 
 FAQ_BUTTON = "❓FAQ"
 COMMUNITY_BUTTON = "💬Сообщество"
@@ -99,6 +100,7 @@ DETENTION = ((BRIBE_BUTTON, ESCAPE_BUTTON),)
 RETENTION = ((BRIBE_BUTTON, EMPTY_BUTTON),)
 CASINO = ((DICE_BUTTON, BACK_BUTTON),)
 SIDE_JOB = ((INVITE_BUTTON, BACK_BUTTON),)
+PAYMENT = ((PAYMENT_BUTTON, BACK_BUTTON),)
 INFO = ((FAQ_BUTTON, COMMUNITY_BUTTON),
         (LETTER_BUTTON, VERSION_BUTTON),
         (BACK_BUTTON, EMPTY_BUTTON))
@@ -150,6 +152,7 @@ REG_USERS = "INSERT OR IGNORE INTO users VALUES (?, ?)"
 REG_BALANCE = "INSERT OR IGNORE INTO balance VALUES (?, ?, ?, ?, ?)"
 REG_FARM = "INSERT OR IGNORE INTO farm VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 REG_FARM_AMENDMENTS = "INSERT OR IGNORE INTO farm_amendments VALUES (?, ?, ?, ?, ?, ?, ?)"
+ADD_REFERRAL = "INSERT OR IGNORE INTO ref_system VALUES (?, ?, ?)"
 
 GET_BALANCE = "SELECT money, high, chip FROM balance WHERE id = ?"
 GET_FROM_TABLE = "SELECT {field} FROM {table} WHERE id = ?"
@@ -160,6 +163,9 @@ GET_RATING = ("SELECT users.nick, balance.{param} FROM users JOIN balance "
 IS_REG = "SELECT * FROM users WHERE id = ?"
 GET_DEV_ID = "SELECT * FROM dev"
 GET_PLAYERS_NUMBER = "SELECT COUNT(id) FROM users"
+GET_COMPLETED_REFERRALS = ("SELECT referral, nick FROM ref_system JOIN balance ON ref_system.referral = balance.id "
+                           + "JOIN users ON ref_system.referral = users.id WHERE ref_system.referrer = ? AND "
+                           + "ref_system.task = 0 AND balance.harvest_sum > 0")
 
 UPDATE_NICK = "UPDATE users SET nick = ? WHERE id = ?"
 TO_ZERO_FARM_AMENDMENTS = "UPDATE farm_amendments SET XS = 0, S = 0, M = 0, L = 0, XL = 0, XXL = 0 WHERE id = ?"
@@ -171,6 +177,8 @@ HIGH_TO_BALANCE_CLEAR_FARM = "UPDATE farm SET last_collect = ? WHERE id = ?"
 HIGH_TO_MONEY = "UPDATE balance SET high = high - ?, money = money + ? WHERE id = ?"
 ESCAPE = "UPDATE balance SET money = money - ? WHERE id = ?"
 BRIBE = "UPDATE balance SET money = money - ?, high = high - ? WHERE id = ?"
+UPDATE_REF_SYSTEM = "UPDATE ref_system SET task = 1 WHERE referral = ?"
+REFERRAL_TO_MONEY = "UPDATE balance SET money = money + ? WHERE id = ?"
 
 # Start Properties
 
@@ -199,7 +207,7 @@ FARM_DESC_END = "\nВсего: *{all}*🌳\nПоследний сбор: *{date}
 FARM_HARVEST = ("👍 *Шишки собраны!*\n\nВы собрали: *{number}*🌳\n\n"
                 + "Собранный урожай вы можете продать за 💰 своему 👳🏻‍♂Агенту")
 
-HARVEST_ERROR = "❗*Нового урожая нет*❗"
+HARVEST_ERROR = "❗*Урожай ещё не созрел*❗"
 
 # Patterns
 
@@ -310,6 +318,12 @@ COMMUNITY_DESC = ("Чат игроков WeedGrowBot: {link}\n"
 
 # Side job
 
+PRICE_FOR_REFERRAL = 99
 SIDE_JOB_DESC = (SIDE_JOB_BUTTON.join("**")
                  + " - это способы разово выполнить какое-нибудь 📋 задание и получить за него достойную 💰 оплату.")
-INVITE_DESC = "Разработчики *прямо сейчас* во всю 🗣 обсуждают реферальную систему в игре. Ждите 🕑"
+REFERRAL_LINK = "https://t.me/WeedGrowBot?start={id}"
+INVITE_DESC = ("Это Ваша *ссылка* для привлечения в игру других 👥 игроков.\nИгроку нужно купить *1 Grow box* и "
+               "*1 раз* собрать урожай, за это вы заработаете *{price}*💰.\nКогда он это сделает, нажмите "
+               + PAYMENT_BUTTON.join("**")).format(price=PRICE_FOR_REFERRAL)
+NO_COMPLETED_REFERRALS = "У Вас нет 👥 рефералов, которые выполнили 📋 задание, но за которых Вы не получили 💰 оплату."
+SUCCESSFUL_REFERRAL = "*{nick}* выполнил задание, оплата получена!"

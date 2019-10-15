@@ -48,6 +48,14 @@ def money_retention(money):
 def start(update, _):
     if sql.is_reg(db_path=config.DB_PATH, telegram_id=update.message.from_user.id) is None:
         sql.reg(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
+        if len(update.message.text) > len("/start"):
+            try:
+                referrer = int(update.message.text.split()[-1])
+            except ValueError:
+                pass
+            else:
+                if sql.get_from_table(db_path=config.DB_PATH, telegram_id=referrer, table="users", field="nick"):
+                    sql.add_referral(db_path=config.DB_PATH, referrer=referrer, referral=update.message.chat.id)
         train.to_desc_1(update, _)
         return state.TRAIN_DESC_1
     elif not update.message.from_user.is_bot:
