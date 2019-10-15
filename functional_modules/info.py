@@ -17,7 +17,7 @@ def faq(update, _):
 
 
 def community(update, _):
-    update.message.reply_text(text=config.COMMUNITY_DESC, reply_markup=menu.show(menu=config.INFO))
+    update.message.reply_markdown(text=config.COMMUNITY_DESC, reply_markup=menu.show(menu=config.INFO))
     return state.INFO
 
 

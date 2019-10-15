@@ -92,7 +92,9 @@ def waiting_1_sec(context):
 
 
 def street_enter_high(update, _):
-    update.message.reply_markdown(text=config.STREET_ENTER_HIGH_TEXT, reply_markup=menu.show(menu=config.BACK))
+    (money, high, _) = sql.get_balance(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
+    update.message.reply_markdown(
+        text=config.STREET_ENTER_HIGH_TEXT.format(money=money, high=high), reply_markup=menu.show(menu=config.BACK))
     return state.STREET_ENTER_HIGH
 
 

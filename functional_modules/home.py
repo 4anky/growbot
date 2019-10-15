@@ -25,7 +25,7 @@ def farm(update, context):
                              text=(config.FARM_BUTTON.join("**")
                                    + config.FARM_DESC_START
                                    + farm_stats
-                                   + config.FARM_DESC_END.format(all=sum(high_stats), date=farm_data[6])),
+                                   + config.FARM_DESC_END.format(all=sum(high_stats))),
                              reply_markup=menu.inline_button(text=config.HARVEST_INLINE, data=str(sum(high_stats))),
                              parse_mode=ParseMode.MARKDOWN)
     return state.HOME
