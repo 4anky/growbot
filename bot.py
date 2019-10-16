@@ -126,7 +126,7 @@ query_handlers = {
 }
 
 dev_commands = {
-   "players_number": CommandHandler(command="_players_number", callback=dev.players_number)
+   "players": CommandHandler(command="_players", callback=dev.players)
 }
 
 for handler in query_handlers.values():
