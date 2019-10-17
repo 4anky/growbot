@@ -2,9 +2,9 @@
 
 TOKEN_PATH = "materials/token.txt"
 TOKEN = open(file=TOKEN_PATH, mode='r').read()
-VERSION_NUMBER = "v0.1.7."
+VERSION_NUMBER = "v0.1.8."
 VERSION = ("🌳*Weed Grow*🌳\n_{n}_\n\n"
-           + "• Мелкие правки текста.").format(n=VERSION_NUMBER)
+           + "• Снижены цены в 🐲HighGrowing.").format(n=VERSION_NUMBER)
 
 # Train
 
@@ -132,15 +132,15 @@ PURCHASE_ERROR = "⛔*Недостаточно средств!*⛔"
 XS = {"SIZE": "XS", "PATH": "materials/XS.jpg", "DESC": "Grow-box на 2 растения",
       "NAME": "Belladonna", "MINING": 16, "PRICE": 101}
 S = {"SIZE": "S", "PATH": "materials/S.jpg", "DESC": "Grow-box на 4 растения",
-     "NAME": "Skunk+", "MINING": 184, "PRICE": 1000}
+     "NAME": "Skunk+", "MINING": 80, "PRICE": 400}
 M = {"SIZE": "M", "PATH": "materials/M.jpg", "DESC": "Grow-box на 8 растений",
-     "NAME": "Sour Diesel", "MINING": 1249, "PRICE": 6500}
+     "NAME": "Sour Diesel", "MINING": 360, "PRICE": 1600}
 L = {"SIZE": "L", "PATH": "materials/L.jpg", "DESC": "Grow-box на 24 растения",
-     "NAME": "🇷🇺White Russian", "MINING": 3463, "PRICE": 18000}
+     "NAME": "🇷🇺White Russian", "MINING": 1980, "PRICE": 8000}
 XL = {"SIZE": "XL", "PATH": "materials/XL.jpg", "DESC": "Grow-room на 50 растений",
-      "NAME": "🖤Black Water", "MINING": 13020, "PRICE": 65000}
+      "NAME": "🖤Black Water", "MINING": 12870, "PRICE": 48000}
 XXL = {"SIZE": "XXL", "PATH": "materials/XXL.jpg", "DESC": "Grow-room на 100 растений",
-       "NAME": "🦍Original Gorilla Glue 4 S1", "MINING": 31250, "PRICE": 190000}
+       "NAME": "🦍Original Gorilla Glue 4 S1", "MINING": 109400, "PRICE": 380000}
 
 SIZES = [XS, S, M, L, XL, XXL]
 
