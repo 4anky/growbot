@@ -27,7 +27,11 @@ fCentre = filters.MessageFilter(button=config.CENTRE_BUTTON)
 fOutskirts = filters.MessageFilter(button=config.OUTSKIRTS_BUTTON)
 fBribe = filters.MessageFilter(button=config.BRIBE_BUTTON)
 fEscape = filters.MessageFilter(button=config.ESCAPE_BUTTON)
+fBlackjack = filters.MessageFilter(button=config.BLACKJACK_BUTTON)
 fDice = filters.MessageFilter(button=config.DICE_BUTTON)
+fExchange = filters.MessageFilter(button=config.EXCHANGE_BUTTON)
+fChip = filters.MessageFilter(button=config.TO_MONEY_BUTTON)
+fMoney = filters.MessageFilter(button=config.TO_CHIP_BUTTON)
 fInvite = filters.MessageFilter(button=config.INVITE_BUTTON)
 fPayment = filters.MessageFilter(button=config.PAYMENT_BUTTON)
 fFAQ = filters.MessageFilter(button=config.FAQ_BUTTON)
@@ -98,9 +102,15 @@ conversation = ConversationHandler(
             state.STREET_RETENTION: [MessageHandler(filters=fBribe, callback=sell_goods.bribe_after_retention),
                                      CommandHandler(command="start", callback=sell_goods.retention_notify)
                                      ],
-            state.CASINO: [MessageHandler(filters=fDice, callback=casino.dice),
+            state.CASINO: [MessageHandler(filters=fBlackjack, callback=casino.blackjack),
+                           MessageHandler(filters=fDice, callback=casino.dice),
+                           MessageHandler(filters=fExchange, callback=casino.exchange),
                            MessageHandler(filters=fBack, callback=utility.back_to_main)
                            ],
+            state.EXCHANGE: [MessageHandler(filters=fMoney, callback=casino.to_chip),
+                             MessageHandler(filters=fChip, callback=casino.to_money),
+                             MessageHandler(filters=fBack, callback=casino.casino)
+                             ],
             state.SIDE_JOB: [MessageHandler(filters=fInvite, callback=side_job.invite),
                              MessageHandler(filters=fBack, callback=utility.back_to_main)
                              ],

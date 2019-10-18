@@ -68,7 +68,12 @@ OUTSKIRTS_BUTTON = "🏚Окраина"
 BRIBE_BUTTON = "😑Договориться"
 ESCAPE_BUTTON = "🏃🏿‍♂Сбежать"
 
-DICE_BUTTON = "🎲Кости"
+BLACKJACK_BUTTON = "♥Blackjack♠"
+DICE_BUTTON = "🎲Dice"
+EXCHANGE_BUTTON = "🔄Касса"
+
+TO_CHIP_BUTTON = "Обменять 💰"
+TO_MONEY_BUTTON = "Обменять 🔴"
 
 INVITE_BUTTON = "👥Пригласи друзей"
 PAYMENT_BUTTON = "💲Получить оплату"
@@ -98,7 +103,10 @@ STREET_PLACES = ((OUTSKIRTS_BUTTON, CENTRE_BUTTON),
                  (BACK_BUTTON, EMPTY_BUTTON))
 DETENTION = ((BRIBE_BUTTON, ESCAPE_BUTTON),)
 RETENTION = ((BRIBE_BUTTON, EMPTY_BUTTON),)
-CASINO = ((DICE_BUTTON, BACK_BUTTON),)
+CASINO = ((BLACKJACK_BUTTON, DICE_BUTTON),
+          (EXCHANGE_BUTTON, BACK_BUTTON))
+EXCHANGE = ((TO_CHIP_BUTTON, TO_MONEY_BUTTON),
+            (BACK_BUTTON, EMPTY_BUTTON))
 SIDE_JOB = ((INVITE_BUTTON, BACK_BUTTON),)
 PAYMENT = ((PAYMENT_BUTTON, BACK_BUTTON),)
 INFO = ((FAQ_BUTTON, COMMUNITY_BUTTON),
@@ -240,6 +248,9 @@ NOT_ENOUGH_HIGH = "У Вас есть только *{high}*🌳. Введите 
 # Casino
 
 CASINO_PIC_PATH = "materials/Casino.jpg"
+COMMISSION = 2
+EXCHANGE_DESC = ("Здесь Вы можете произвести *обмен* между 🔴 и 💰.\n\n*Курс обмена:* *1*💰 = *100*🔴\n\n*Комиссия* за "
+                 + "перевод: *{chip}*🔴").format(chip=COMMISSION)
 CASINO_DESC = CASINO_BUTTON.join("**") + " скоро откроется!\nЖдите 🕑, мы обязательно сообщим!"
 DICE_DESC = CASINO_DESC
 
