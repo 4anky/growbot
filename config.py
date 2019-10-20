@@ -2,9 +2,11 @@
 
 TOKEN_PATH = "materials/token.txt"
 TOKEN = open(file=TOKEN_PATH, mode='r').read()
-VERSION_NUMBER = "v0.1.8."
+VERSION_NUMBER = "v0.1.10."
 VERSION = ("🌳*Weed Grow*🌳\n_{n}_\n\n"
-           + "• Снижены цены в 🐲HighGrowing.").format(n=VERSION_NUMBER)
+           + "• Исправлена ошибка сбора урожая в старых сообщениях;\n"
+           + "• В Casino открылась *Касса* для покупки/продажи фишек;\n"
+           + "• *Дилер* снизил цены").format(n=VERSION_NUMBER)
 
 # Train
 
@@ -163,17 +165,19 @@ REG_FARM_AMENDMENTS = "INSERT OR IGNORE INTO farm_amendments VALUES (?, ?, ?, ?,
 ADD_REFERRAL = "INSERT OR IGNORE INTO ref_system VALUES (?, ?, ?)"
 
 GET_BALANCE = "SELECT money, high, chip FROM balance WHERE id = ?"
+GET_ALL_FARM = ("SELECT f.XS, f.S, f.M, f.L, f.XL, f.XXL, fa.XS, fa.S, fa.M, fa.L, fa.XL, fa.XXL, f.last_collect "
+                + "FROM farm AS f JOIN farm_amendments AS fa ON f.id = fa.id WHERE f.id = ?")
 GET_FROM_TABLE = "SELECT {field} FROM {table} WHERE id = ?"
-GET_FARM = "SELECT XS, S, M, L, XL, XXL, last_collect FROM farm WHERE id = ?"
-GET_FARM_AMENDMENTS = "SELECT XS, S, M, L, XL, XXL FROM farm_amendments WHERE id = ?"
 GET_RATING = ("SELECT users.nick, balance.{param} FROM users JOIN balance ON users.id = balance.id "
               + "ORDER BY {param} DESC LIMIT 10")
 IS_REG = "SELECT * FROM users WHERE id = ?"
 GET_DEV_ID = "SELECT * FROM dev"
 GET_PLAYERS_NUMBER = "SELECT COUNT(id) FROM users"
-GET_COMPLETED_REFERRALS = ("SELECT referral, nick FROM ref_system JOIN balance ON ref_system.referral = balance.id "
-                           + "JOIN users ON ref_system.referral = users.id WHERE ref_system.referrer = ? AND "
-                           + "ref_system.task = 0 AND balance.harvest_sum > 0")
+GET_COMPLETED_REFERRALS = ("SELECT referral, nick "
+                           + "FROM ref_system AS ref "
+                           + "JOIN balance AS b ON ref.referral = b.id "
+                           + "JOIN users ON ref.referral = users.id "
+                           + "WHERE ref.referrer = ? AND ref.task = 0 AND b.harvest_sum > 0")
 
 UPDATE_NICK = "UPDATE users SET nick = ? WHERE id = ?"
 TO_ZERO_FARM_AMENDMENTS = "UPDATE farm_amendments SET XS = 0, S = 0, M = 0, L = 0, XL = 0, XXL = 0 WHERE id = ?"
@@ -187,6 +191,8 @@ ESCAPE = "UPDATE balance SET money = money - ? WHERE id = ?"
 BRIBE = "UPDATE balance SET money = money - ?, high = high - ? WHERE id = ?"
 UPDATE_REF_SYSTEM = "UPDATE ref_system SET task = 1 WHERE referral = ?"
 REFERRAL_TO_MONEY = "UPDATE balance SET money = money + ? WHERE id = ?"
+MONEY_TO_CHIP = "UPDATE balance SET money = money - ?, chip = chip + ? WHERE id = ?"
+CHIP_TO_MONEY = "UPDATE balance SET chip = chip - ?, money = money + ? WHERE id = ?"
 
 # Start Properties
 
@@ -199,13 +205,13 @@ START_HARVEST_SUM = 0
 # Balance
 
 BALANCE = (BALANCE_BUTTON.join("**")
-           + "\n\nНаличные: *{money}*💰\nШишек на складе: *{high}*🌳\nФишек в Casino: *{chip}*🔴️")
+           + "\n\nНаличные: *{money}*💰\nШишки на складе: *{high}*🌳\nФишки Casino: *{chip}*🔴️")
 HIGH_ON_STOCK = "Шишек на складе: *{high}*🌳"
 MONEY_ON_STOCK = "Наличные: *{money}*💰"
 
 # Farm
 
-LAST_COLLECT = 6
+LAST_COLLECT = -1
 RIPENING = {"MINUTE": 23}
 FARM_DESC_START = ("\n\nЗдесь установлены купленные вами *Grow-box*. В них созревают 🌳, которые Вам необходимо "
                    + "собирать и продавать. Ниже вы можете посмотреть сколько 🌳 выросло в Ваших *Grow-box* с "
@@ -219,16 +225,16 @@ HARVEST_ERROR = "❗*Урожай ещё не созрел*❗"
 
 # Patterns
 
-PATTERN_HARVEST = r'[+]?\d+'
+PATTERN_HARVEST = 'harvest'
 PATTERN_NICK = '[A-Za-z0-9]'
 
 # Dealer (∀i: BID_i+1["HIGH"] > BID_i["HIGH"])
 
-BID_1 = {"HIGH": 150, "PAY": 1}
-BID_2 = {"HIGH": 350, "PAY": 3}
-BID_3 = {"HIGH": 1000, "PAY": 10}
-BID_4 = {"HIGH": 2600, "PAY": 30}
-BID_5 = {"HIGH": 7000, "PAY": 100}
+BID_1 = {"HIGH": 100, "PAY": 1}
+BID_2 = {"HIGH": 270, "PAY": 3}
+BID_3 = {"HIGH": 800, "PAY": 10}
+BID_4 = {"HIGH": 2100, "PAY": 30}
+BID_5 = {"HIGH": 6000, "PAY": 100}
 BIDS = [BID_1, BID_2, BID_3, BID_4, BID_5]
 
 HIGH_MIN = 1
@@ -248,11 +254,17 @@ NOT_ENOUGH_HIGH = "У Вас есть только *{high}*🌳. Введите 
 # Casino
 
 CASINO_PIC_PATH = "materials/Casino.jpg"
-COMMISSION = 2
-EXCHANGE_DESC = ("Здесь Вы можете произвести *обмен* между 🔴 и 💰.\n\n*Курс обмена:* *1*💰 = *100*🔴\n\n*Комиссия* за "
-                 + "перевод: *{chip}*🔴").format(chip=COMMISSION)
+CHIPS_FOR_CURRENCY_UNIT = 100
+COMMISSION = 20
+EXCHANGE_DESC = ("Здесь Вы можете произвести *обмен* между 🔴 и 💰.\n\n*Курс обмена:* *1*💰 = *{chips}*🔴\n\n*Комиссия* "
+                 + "за перевод: *{commission}*🔴").format(chips=CHIPS_FOR_CURRENCY_UNIT, commission=COMMISSION)
 CASINO_DESC = CASINO_BUTTON.join("**") + " скоро откроется!\nЖдите 🕑, мы обязательно сообщим!"
-DICE_DESC = CASINO_DESC
+MONEY_TO_CHIP_TEXT = "💰 ➡ 🔴\n\nНаличные: *{money}*💰\nФишки Casino: *{chip}*🔴️\n\nВведите количество 💰 для обмена:"
+CHIP_TO_MONEY_TEXT = "🔴 ➡ 💰\n\nНаличные: *{money}*💰\nФишки Casino: *{chip}*🔴️\n\nВведите количество 🔴 для обмена:"
+NOT_ENOUGH_MONEY = "У Вас есть только *{money}*💰. Введите число не более *{money}*:"
+NOT_ENOUGH_CHIP = "У Вас есть только *{chip}*🔴. Введите число не более *{chip}*:"
+BUY_CHIPS = "Вы купили *{new}*🔴.\n\nНаличные: *{money}*💰\nФишки Casino: *{chip}*🔴"
+SELL_CHIPS = "Вы получили *{new}*💰.\n\nНаличные: *{money}*💰\nФишки Casino: *{chip}*🔴"
 
 # Rating
 

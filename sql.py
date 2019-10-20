@@ -80,35 +80,25 @@ def get_from_table(db_path, telegram_id, table, field):
         cursor.execute(config.GET_FROM_TABLE.format(field=field, table=table), (telegram_id,))
     except sqlite3.Error as Error:
         print(Error)
-    # [result] = [cursor.fetchone()[0] if cursor.fetchone()[0] is not None else None]
     answer = cursor.fetchone()
     [result] = [answer[0] if answer is not None else answer]
     connection.close()
     return result
 
 
-def get_farm(db_path, telegram_id):
+def get_all_farm(db_path, telegram_id):
     connection = create_connection(db_path=db_path)
     cursor = connection.cursor()
+    result = []
     try:
-        cursor.execute(config.GET_FARM, (telegram_id,))
+        cursor.execute(config.GET_ALL_FARM, (telegram_id,))
     except sqlite3.Error as Error:
         print(Error)
-    result = cursor.fetchone()
-    connection.close()
-    return result
-
-
-def get_farm_amendments(db_path, telegram_id):
-    connection = create_connection(db_path=db_path)
-    cursor = connection.cursor()
-    try:
-        cursor.execute(config.GET_FARM_AMENDMENTS, (telegram_id,))
-    except sqlite3.Error as Error:
-        print(Error)
-    result = cursor.fetchone()
-    connection.close()
-    return result
+    else:
+        result = cursor.fetchone()
+    finally:
+        connection.close()
+    return result[:6], result[6:12], result[-1]
 
 
 def to_zero_farm_amendments(db_path, telegram_id):
@@ -280,6 +270,32 @@ def add_completed_referral(db_path, referrer, referral):
     try:
         cursor.execute(config.UPDATE_REF_SYSTEM, (referral,))
         cursor.execute(config.REFERRAL_TO_MONEY, (config.PRICE_FOR_REFERRAL, referrer))
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        connection.commit()
+    finally:
+        connection.close()
+
+
+def money_to_chips(db_path, telegram_id, money, chip):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    try:
+        cursor.execute(config.MONEY_TO_CHIP, (money, chip, telegram_id))
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        connection.commit()
+    finally:
+        connection.close()
+
+
+def chips_to_money(db_path, telegram_id, money, chip):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    try:
+        cursor.execute(config.CHIP_TO_MONEY, (chip, money, telegram_id))
     except sqlite3.Error as Error:
         print(Error)
     else:

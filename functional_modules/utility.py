@@ -31,6 +31,13 @@ def money_transfer(high):
     return sum(pack * bid["PAY"] for pack, bid in zip(packs, config.BIDS[::-1]))
 
 
+def farm_stats(telegram_id):
+    boxes, amendments, last_collect = sql.get_all_farm(db_path=config.DB_PATH, telegram_id=telegram_id)
+    number = ripening_number_score(last_collect=last_collect)
+    return number, boxes, [number * box * size["MINING"] - amendment
+                           for box, size, amendment in zip(boxes, config.SIZES, amendments)]
+
+
 def street_exchange(high, price):
     return (high // (config.MIN_HIGH_FOR_STREET // 5) * 100,
             high % (config.MIN_HIGH_FOR_STREET // 5),

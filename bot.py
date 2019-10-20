@@ -107,15 +107,22 @@ conversation = ConversationHandler(
                            MessageHandler(filters=fExchange, callback=casino.exchange),
                            MessageHandler(filters=fBack, callback=utility.back_to_main)
                            ],
-            state.EXCHANGE: [MessageHandler(filters=fMoney, callback=casino.to_chip),
-                             MessageHandler(filters=fChip, callback=casino.to_money),
+            state.EXCHANGE: [MessageHandler(filters=fMoney, callback=casino.enter_money),
+                             MessageHandler(filters=fChip, callback=casino.enter_chip),
                              MessageHandler(filters=fBack, callback=casino.casino)
+                             ],
+            state.TO_CHIP: [MessageHandler(filters=(Filters.text & (~ fBack)), callback=casino.money_to_chips),
+                            MessageHandler(filters=fBack, callback=casino.exchange)
+                            ],
+            state.TO_MONEY: [MessageHandler(filters=(Filters.text & (~ fBack)), callback=casino.chips_to_money),
+                             MessageHandler(filters=fBack, callback=casino.exchange)
                              ],
             state.SIDE_JOB: [MessageHandler(filters=fInvite, callback=side_job.invite),
                              MessageHandler(filters=fBack, callback=utility.back_to_main)
                              ],
             state.INVITE: [MessageHandler(filters=fPayment, callback=side_job.invite_payment),
-                           MessageHandler(filters=fBack, callback=side_job.side_job)],
+                           MessageHandler(filters=fBack, callback=side_job.side_job)
+                           ],
             state.INFO: [MessageHandler(filters=fFAQ, callback=info.faq),
                          MessageHandler(filters=fCommunity, callback=info.community),
                          MessageHandler(filters=fLetter, callback=info.letter),
@@ -144,4 +151,4 @@ for handler in query_handlers.values():
 for handler in dev_commands.values():
     updater.dispatcher.add_handler(handler=handler)
 updater.dispatcher.add_handler(handler=conversation)
-updater.start_polling(read_latency=0.2)
+updater.start_polling(read_latency=0)

@@ -13,32 +13,27 @@ def home(update, _):
 
 
 def farm(update, context):
-    farm_data = sql.get_farm(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
-    farm_amendments_data = sql.get_farm_amendments(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
-    ripening_number = utility.ripening_number_score(last_collect=farm_data[config.LAST_COLLECT])
-    high_stats = [ripening_number * high * size["MINING"] - amendment
-                  for high, size, amendment in zip(farm_data, config.SIZES, farm_amendments_data)]
-    farm_stats = "\n".join([config.FARM_STATS.format(name=sort["NAME"], number=number, mature=high)
-                            for sort, number, high in zip(config.SIZES, farm_data, high_stats)
-                            if number])
+    _, boxes, ripened_high = utility.farm_stats(telegram_id=update.message.from_user.id)
+    farm_text = "\n".join([config.FARM_STATS.format(name=sort["NAME"], number=number, mature=high)
+                           for sort, number, high in zip(config.SIZES, boxes, ripened_high) if number])
+
     context.bot.send_message(chat_id=update.message.from_user.id,
                              text=(config.FARM_BUTTON.join("**")
                                    + config.FARM_DESC_START
-                                   + farm_stats
-                                   + config.FARM_DESC_END.format(all=sum(high_stats))),
-                             reply_markup=menu.inline_button(text=config.HARVEST_INLINE, data=str(sum(high_stats))),
+                                   + farm_text
+                                   + config.FARM_DESC_END.format(all=sum(ripened_high))),
+                             reply_markup=menu.inline_button(text=config.HARVEST_INLINE, data=config.PATTERN_HARVEST),
                              parse_mode=ParseMode.MARKDOWN)
     return state.HOME
 
 
 def harvest(update, context):
-    high_number = int(update.callback_query.data)
     telegram_id = update.callback_query.message.chat.id
-    ripening_number = utility.ripening_number_score(last_collect=sql.get_from_table(
-        db_path=config.DB_PATH, telegram_id=telegram_id, table="farm", field="last_collect"))
+    ripening_number, _, ripened_high = utility.farm_stats(telegram_id=telegram_id)
+    high_number = sum(ripened_high)
+
     if high_number and ripening_number:
-        sql.high_to_balance(
-            db_path=config.DB_PATH, telegram_id=telegram_id, high=high_number)
+        sql.high_to_balance(db_path=config.DB_PATH, telegram_id=telegram_id, high=high_number)
         sql.to_zero_farm_amendments(db_path=config.DB_PATH, telegram_id=telegram_id)
         context.bot.edit_message_text(text=config.FARM_HARVEST.format(number=high_number),
                                       chat_id=telegram_id,
