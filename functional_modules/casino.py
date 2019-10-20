@@ -85,20 +85,21 @@ def chips_to_money(update, context):
         update.message.reply_markdown(text=config.NOT_POSITIVE_NUMBER, reply_markup=menu.show(menu=config.BACK))
         return state.TO_MONEY
     else:
-        if chips_for_exchange <= 0:
-            update.message.reply_markdown(text=config.NOT_POSITIVE_NUMBER, reply_markup=menu.show(menu=config.BACK))
+        if chips_for_exchange <= config.COMMISSION:
+            update.message.reply_markdown(text=config.LESS_THAN_COMMISSION, reply_markup=menu.show(menu=config.BACK))
             return state.TO_MONEY
         elif chips_for_exchange > context.user_data["chip"]:
             update.message.reply_markdown(text=config.NOT_ENOUGH_CHIP.format(chip=context.user_data["chip"]))
             return state.TO_MONEY
         else:
             new_money = (chips_for_exchange - config.COMMISSION) // config.CHIPS_FOR_CURRENCY_UNIT
-            unchanged_chips = (chips_for_exchange - config.COMMISSION) % config.CHIPS_FOR_CURRENCY_UNIT
+            changed_chips = new_money * config.CHIPS_FOR_CURRENCY_UNIT
+            # unchanged_chips = (chips_for_exchange - config.COMMISSION) % config.CHIPS_FOR_CURRENCY_UNIT
             sql.chips_to_money(
                 db_path=config.DB_PATH,
                 telegram_id=update.message.chat.id,
                 money=new_money,
-                chip=context.user_data["chip"] - unchanged_chips)
+                chip=changed_chips + config.COMMISSION)
             money, _, chip = sql.get_balance(db_path=config.DB_PATH, telegram_id=update.message.chat.id)
             update.message.reply_markdown(
                 text=config.SELL_CHIPS.format(new=new_money, money=money, chip=chip),
