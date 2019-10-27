@@ -2,9 +2,10 @@
 
 TOKEN_PATH = "materials/token.txt"
 TOKEN = open(file=TOKEN_PATH, mode='r').read()
-VERSION_NUMBER = "v0.1.11."
+VERSION_NUMBER = "v0.1.12."
 VERSION = ("🌳*Weed Grow*🌳\n_{n}_\n\n"
-           + "• Исправлена ошибка пересчета фишек в деньги;\n").format(n=VERSION_NUMBER)
+           + "• В рейтинг богачей не попадают игроки, ни разу не собравшие урожай;\n"
+             "• Мелкие правки текста в *Casino*\n").format(n=VERSION_NUMBER)
 
 # Train
 
@@ -167,7 +168,7 @@ GET_ALL_FARM = ("SELECT f.XS, f.S, f.M, f.L, f.XL, f.XXL, fa.XS, fa.S, fa.M, fa.
                 + "FROM farm AS f JOIN farm_amendments AS fa ON f.id = fa.id WHERE f.id = ?")
 GET_FROM_TABLE = "SELECT {field} FROM {table} WHERE id = ?"
 GET_RATING = ("SELECT users.nick, balance.{param} FROM users JOIN balance ON users.id = balance.id "
-              + "ORDER BY {param} DESC LIMIT 10")
+              + "WHERE harvest_sum > 0 ORDER BY {param} DESC LIMIT 10")
 IS_REG = "SELECT * FROM users WHERE id = ?"
 GET_DEV_ID = "SELECT * FROM dev"
 GET_PLAYERS_NUMBER = "SELECT COUNT(id) FROM users"
@@ -254,12 +255,13 @@ NOT_ENOUGH_HIGH = "У Вас есть только *{high}*🌳. Введите 
 CASINO_PIC_PATH = "materials/Casino.jpg"
 CHIPS_FOR_CURRENCY_UNIT = 100
 COMMISSION = 20
-EXCHANGE_DESC = ("Здесь Вы можете произвести *обмен* между 🔴 и 💰.\n\n*Курс обмена:* *1*💰 = *{chips}*🔴\n\n*Комиссия* "
+EXCHANGE_DESC = ("Здесь производится *обмен* между 🔴 и 💰.\n\n*Курс* обмена: *1*💰 = *{chips}*🔴\n*Комиссия* "
                  + "за перевод: *{commission}*🔴").format(chips=CHIPS_FOR_CURRENCY_UNIT, commission=COMMISSION)
 CASINO_DESC = CASINO_BUTTON.join("**") + " скоро откроется!\nЖдите 🕑, мы обязательно сообщим!"
-MONEY_TO_CHIP_TEXT = "💰 ➡ 🔴\n\nНаличные: *{money}*💰\nФишки Casino: *{chip}*🔴️\n\nВведите количество 💰 для обмена:"
-CHIP_TO_MONEY_TEXT = ("🔴 ➡ 💰\n\nНаличные: *{money}*💰\nФишки Casino: *{chip}*🔴️\n\nВведите количество 🔴 для обмена:"
-                      + "\n⚠*Внимание!*⚠ В вводимую сумму закладывайте размер комиссии")
+MONEY_TO_CHIP_TEXT = ("*Обмен:* 💰➡🔴\n\nНаличные: *{money}*💰\nФишки Casino: *{chip}*🔴️\n\nВведите количество 💰 "
+                      + "для обмена:")
+CHIP_TO_MONEY_TEXT = ("*Обмен:* 🔴➡💰\n\nНаличные: *{money}*💰\nФишки Casino: *{chip}*🔴️\n\nВведите количество 🔴 "
+                      + "для обмена:\n*Внимание!* Во вводимую сумму закладывайте размер комиссии")
 LESS_THAN_COMMISSION = "Ожидается *целое число больше {com}*. Введите его:".format(com=COMMISSION)
 NOT_ENOUGH_MONEY = "У Вас есть только *{money}*💰. Введите число не более *{money}*:"
 NOT_ENOUGH_CHIP = "У Вас есть только *{chip}*🔴. Введите число не более *{chip}*:"
