@@ -1,3 +1,5 @@
+import logging
+
 from telegram import ParseMode
 
 from functional_modules import utility
@@ -6,17 +8,25 @@ import menu_bot as menu
 import states as state
 import sql
 
+LOGS_PATH = __file__.replace(r"functional_modules\home.py", "logs/home.log")
+
+logging.basicConfig(filename=LOGS_PATH, level=logging.INFO)
+
 
 def home(update, _):
     update.message.reply_markdown(text=config.HOME_DESC, reply_markup=menu.show(menu=config.HOME))
     return state.HOME
 
 
-def farm(update, context):
-    _, boxes, ripened_high = utility.farm_stats(telegram_id=update.message.from_user.id)
-    farm_text = "\n".join([config.FARM_STATS.format(name=sort["NAME"], number=number, mature=high)
-                           for sort, number, high in zip(config.SIZES, boxes, ripened_high) if number])
+def generate_farm_text(telegram_id):
+    _, boxes, ripened_high = utility.farm_stats(telegram_id=telegram_id)
+    return ("\n".join([config.FARM_STATS.format(name=sort["NAME"], number=number, mature=high)
+                       for sort, number, high in zip(config.SIZES, boxes, ripened_high) if number]),
+            ripened_high)
 
+
+def farm(update, context):
+    farm_text, ripened_high = generate_farm_text(telegram_id=update.message.from_user.id)
     context.bot.send_message(chat_id=update.message.from_user.id,
                              text=(config.FARM_BUTTON.join("**")
                                    + config.FARM_DESC_START

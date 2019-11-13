@@ -1,9 +1,11 @@
 from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandler, Filters, MessageHandler, Updater
 
 import config
+import dev
 import message_filters as filters
 import states as state
-from functional_modules import casino, home, info, markets, sell_goods, side_job, train, utility, dev
+from functional_modules import casino, home, info, markets, sell_goods, side_job, train, utility
+
 
 fTrainDesc1 = filters.MessageFilter(button=config.TRAIN_DESC_1_BUTTON)
 fTrainMarket = filters.MessageFilter(button=config.TRAIN_MARKET_BUTTON)
@@ -136,6 +138,8 @@ conversation = ConversationHandler(
             },
     fallbacks=[CommandHandler(command="start", callback=utility.default)]
 )
+
+
 query_handlers = {
     "buy_grow_box": CallbackQueryHandler(callback=markets.buy_grow_box,
                                          pattern='|'.join([size["NAME"] for size in config.SIZES])),
@@ -143,7 +147,9 @@ query_handlers = {
 }
 
 dev_commands = {
-   "players": CommandHandler(command="_players", callback=dev.players)
+    "players": CommandHandler(command="players", callback=dev.players),
+    "users": CommandHandler(command="users", callback=dev.users),
+    "farm": CommandHandler(command="farm", callback=dev.farm, pass_args=True)
 }
 
 for handler in query_handlers.values():

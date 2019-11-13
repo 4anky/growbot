@@ -89,16 +89,16 @@ def get_from_table(db_path, telegram_id, table, field):
 def get_all_farm(db_path, telegram_id):
     connection = create_connection(db_path=db_path)
     cursor = connection.cursor()
-    result = []
     try:
         cursor.execute(config.GET_ALL_FARM, (telegram_id,))
     except sqlite3.Error as Error:
         print(Error)
     else:
         result = cursor.fetchone()
+        if result:
+            return result[:6], result[6:12], result[-1]
     finally:
         connection.close()
-    return result[:6], result[6:12], result[-1]
 
 
 def to_zero_farm_amendments(db_path, telegram_id):
@@ -302,3 +302,19 @@ def chips_to_money(db_path, telegram_id, money, chip):
         connection.commit()
     finally:
         connection.close()
+
+
+def get_users_table(db_path):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    result = []
+    try:
+        cursor.execute(config.GET_USERS_TABLE)
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        for user in cursor.fetchall():
+            result.append(user)
+    finally:
+        connection.close()
+    return result

@@ -32,6 +32,10 @@ TRAIN_NICK_NOT_VALID_TEXT = "🔺*Введённое имя занято*🔺\n\
 # dev
 
 PLAYERS_NUMBER_TEXT = "_В игре зарегистрировано {n} игроков_"
+FARM_ARGUMENT_ERROR_TEXT = "Неверное число аргументов.\nПример команды: /farm 123456789"
+FARM_INCORRECT_ID_TEXT = "Некорректный id пользователя\nПример команды: /farm 123456789"
+FARM_ID_DOES_NOT_EXIST_TEXT = "Игрока с введённым id не существует"
+ACCESS_DENIED_TEXT = "_Данная команда доступна только разработчикам_"
 
 # Menu and Menu buttons
 
@@ -171,6 +175,7 @@ GET_RATING = ("SELECT users.nick, balance.{param} FROM users JOIN balance ON use
               + "WHERE harvest_sum > 0 ORDER BY {param} DESC LIMIT 10")
 IS_REG = "SELECT * FROM users WHERE id = ?"
 GET_DEV_ID = "SELECT * FROM dev"
+GET_USERS_TABLE = "SELECT * FROM users"
 GET_PLAYERS_NUMBER = "SELECT COUNT(id) FROM users"
 GET_COMPLETED_REFERRALS = ("SELECT referral, nick "
                            + "FROM ref_system AS ref "
