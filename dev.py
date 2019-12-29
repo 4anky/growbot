@@ -1,3 +1,5 @@
+from telegram import error
+
 import config
 from functional_modules import home
 import sql
@@ -46,3 +48,13 @@ def farm(update, context):
                                                         + config.FARM_DESC_END.format(all=sum(ripened_high))))
     else:
         update.message.reply_markdown(text=config.ACCESS_DENIED_TEXT)
+
+
+def msg(update, context):
+    if update.message.chat.id in sql.get_dev_id(db_path=config.DB_PATH):
+        users_id = [user_data[0] for user_data in sql.get_users_table(db_path=config.DB_PATH)]
+        for user_id in users_id:
+            try:
+                context.bot.send_message(chat_id=user_id, text=" ".join(context.args))
+            except error.BadRequest:
+                pass

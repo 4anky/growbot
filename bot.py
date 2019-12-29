@@ -109,6 +109,8 @@ conversation = ConversationHandler(
                            MessageHandler(filters=fExchange, callback=casino.exchange),
                            MessageHandler(filters=fBack, callback=utility.back_to_main)
                            ],
+            state.BJ_BET: [MessageHandler(filters=(Filters.text & (~ fBack)), callback=casino.blackjack),
+                           MessageHandler(filters=fBack, callback=casino.casino)],
             state.EXCHANGE: [MessageHandler(filters=fMoney, callback=casino.enter_money),
                              MessageHandler(filters=fChip, callback=casino.enter_chip),
                              MessageHandler(filters=fBack, callback=casino.casino)
@@ -149,7 +151,8 @@ query_handlers = {
 dev_commands = {
     "players": CommandHandler(command="players", callback=dev.players),
     "users": CommandHandler(command="users", callback=dev.users),
-    "farm": CommandHandler(command="farm", callback=dev.farm, pass_args=True)
+    "farm": CommandHandler(command="farm", callback=dev.farm, pass_args=True),
+    "msg": CommandHandler(command="msg", callback=dev.msg, pass_args=True)
 }
 
 for handler in query_handlers.values():
