@@ -2,10 +2,11 @@
 
 TOKEN_PATH = "materials/token.txt"
 TOKEN = open(file=TOKEN_PATH, mode='r').read()
-VERSION_NUMBER = "v0.1.12."
+VERSION_NUMBER = "v0.1.13."
 VERSION = ("🌳*Weed Grow*🌳\n_{n}_\n\n"
-           + "• В рейтинг богачей не попадают игроки, ни разу не собравшие урожай;\n"
-             "• Мелкие правки текста в *Casino*\n").format(n=VERSION_NUMBER)
+           + "• Топ-10 ➡ Топ-15 Богачей и Добытчиков;\n"
+           + "• Снижение производительности гровбоксов при отсутствии сбора урожая от 2-х и более часов;\n"
+           + "• Мелкие правки текста").format(n=VERSION_NUMBER)
 
 # Train
 
@@ -138,7 +139,7 @@ MARKETS_DESC = ("Сегодня работает лишь один магази�
 
 BUY_BUTTON = "Купить"
 
-HIGH_GROWING_CAPTION = "🔹 *{about}*\nСорт: *{name}*\nДобывает: *{mining}* 🌳 в час\nЦена: *{price}* 💰"
+HIGH_GROWING_CAPTION = "🔹 *{about}*\nСорт: *{name}*\nДобывает: до *{mining}* 🌳 в час\nЦена: *{price}* 💰"
 HIGH_GROWING_PURCHASE = ("👍 *Успешно!*\n\n*{desc}* установлена и посажена, теперь вам нужно лишь заходить на 🌱 "
                          + "*Ферму* и собирать созревшие 🌳 шишки. Вы можете установить сколько угодно гровбоксов!")
 PURCHASE_ERROR = "⛔*Недостаточно средств!*⛔"
@@ -172,7 +173,7 @@ GET_ALL_FARM = ("SELECT f.XS, f.S, f.M, f.L, f.XL, f.XXL, fa.XS, fa.S, fa.M, fa.
                 + "FROM farm AS f JOIN farm_amendments AS fa ON f.id = fa.id WHERE f.id = ?")
 GET_FROM_TABLE = "SELECT {field} FROM {table} WHERE id = ?"
 GET_RATING = ("SELECT users.nick, balance.{param} FROM users JOIN balance ON users.id = balance.id "
-              + "WHERE harvest_sum > 0 ORDER BY {param} DESC LIMIT 10")
+              + "WHERE harvest_sum > 0 ORDER BY {param} DESC LIMIT 15")
 IS_REG = "SELECT * FROM users WHERE id = ?"
 GET_DEV_ID = "SELECT * FROM dev"
 GET_USERS_TABLE = "SELECT * FROM users"
@@ -215,6 +216,7 @@ MONEY_ON_STOCK = "Наличные: *{money}*💰"
 
 # Farm
 
+REDUCTION_FACTOR = 0.9715319412
 LAST_COLLECT = -1
 RIPENING = {"MINUTE": 23}
 FARM_DESC_START = ("\n\nЗдесь установлены купленные вами *Grow-box*. В них созревают 🌳, которые Вам необходимо "

@@ -1,4 +1,4 @@
-from telegram import error
+from telegram import error, ParseMode
 
 import config
 from functional_modules import home
@@ -55,6 +55,6 @@ def msg(update, context):
         users_id = [user_data[0] for user_data in sql.get_users_table(db_path=config.DB_PATH)]
         for user_id in users_id:
             try:
-                context.bot.send_message(chat_id=user_id, text=" ".join(context.args))
+                context.bot.send_message(chat_id=user_id, text=" ".join(context.args), parse_mode=ParseMode.MARKDOWN)
             except error.BadRequest:
                 pass

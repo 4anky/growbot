@@ -1,5 +1,3 @@
-from telegram import ParseMode
-
 import config
 import menu_bot as menu
 import sql
@@ -7,26 +5,18 @@ import states as state
 
 
 def casino(update, _):
-    update.message.reply_photo(photo=open(file=config.CASINO_PIC_PATH, mode='rb'),
-                               caption=config.CASINO_DESC,
-                               reply_markup=menu.show(menu=config.CASINO),
-                               parse_mode=ParseMode.MARKDOWN)
+    update.message.reply_markdown(text=config.CASINO_DESC, reply_markup=menu.show(menu=config.CASINO))
     return state.CASINO
 
 
 def blackjack(update, _):
-    update.message.reply_photo(photo=open(file=config.CASINO_PIC_PATH, mode='rb'),
-                               caption=config.CASINO_DESC,
-                               reply_markup=menu.show(menu=config.CASINO),
-                               parse_mode=ParseMode.MARKDOWN)
-    return state.CASINO
+    update.message.reply_markdown(text="Введите ставку - целое число 🔴 фишек:",
+                                  reply_markdown=menu.show(menu=config.BACK))
+    return state.BJ_BET
 
 
 def dice(update, _):
-    update.message.reply_photo(photo=open(file=config.CASINO_PIC_PATH, mode='rb'),
-                               caption=config.CASINO_DESC,
-                               reply_markup=menu.show(menu=config.CASINO),
-                               parse_mode=ParseMode.MARKDOWN)
+    update.message.reply_markdown(text=config.CASINO_DESC, reply_markup=menu.show(menu=config.CASINO))
     return state.CASINO
 
 

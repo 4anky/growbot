@@ -87,32 +87,3 @@ def rating_harvest(update, _):
                           for (nick, harvest_sum) in top)),
         reply_markup=menu.show(menu=config.RATING))
     return state.RATING
-
-ERROR:telegram.ext.dispatcher:No error handlers are registered, logging exception.
-Traceback (most recent call last):
-  File "/home/ec2-user/weed_bot/growbot/.venv/lib64/python3.6/site-packages/telegram/ext/dispatcher.py", line 372, in process_update
-    handler.handle_update(update, self, check, context)
-  File "/home/ec2-user/weed_bot/growbot/.venv/lib64/python3.6/site-packages/telegram/ext/handler.py", line 117, in handle_update
-    return self.callback(update, context)
-  File "/home/ec2-user/weed_bot/growbot/dev.py", line 58, in msg
-    context.bot.send_message(chat_id=user_id, text=" ".join(context.args))
-  File "/home/ec2-user/weed_bot/growbot/.venv/lib64/python3.6/site-packages/telegram/bot.py", line 66, in decorator
-    result = func(self, *args, **kwargs)
-  File "/home/ec2-user/weed_bot/growbot/.venv/lib64/python3.6/site-packages/telegram/bot.py", line 258, in send_message
-    timeout=timeout, **kwargs)
-  File "/home/ec2-user/weed_bot/growbot/.venv/lib64/python3.6/site-packages/telegram/bot.py", line 123, in _message
-    result = self._request.post(url, data, timeout=timeout)
-  File "/home/ec2-user/weed_bot/growbot/.venv/lib64/python3.6/site-packages/telegram/utils/request.py", line 327, in post
-    **urlopen_kwargs)
-  File "/home/ec2-user/weed_bot/growbot/.venv/lib64/python3.6/site-packages/telegram/utils/request.py", line 236, in _request_wrapper
-    raise Unauthorized(message)
-telegram.error.Unauthorized: Forbidden: bot was blocked by the user
-ERROR:telegram.ext.dispatcher:No error handlers are registered, logging exception.
-Traceback (most recent call last):
-  File "/home/ec2-user/weed_bot/growbot/.venv/lib64/python3.6/site-packages/telegram/ext/dispatcher.py", line 372, in process_update
-    handler.handle_update(update, self, check, context)
-  File "/home/ec2-user/weed_bot/growbot/.venv/lib64/python3.6/site-packages/telegram/ext/handler.py", line 117, in handle_update
-    return self.callback(update, context)
-  File "/home/ec2-user/weed_bot/growbot/dev.py", line 30, in farm
-    if update.message.chat.id in sql.get_dev_id(db_path=config.DB_PATH):
-AttributeError: 'NoneType' object has no attribute 'chat'

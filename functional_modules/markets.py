@@ -36,7 +36,7 @@ def buy_grow_box(update, context):
         sql.update_farm_amendments(db_path=config.DB_PATH,
                                    telegram_id=update.callback_query.message.chat.id,
                                    size=grow_box["SIZE"],
-                                   value=ripening_number * grow_box["MINING"])
+                                   value=int(ripening_number * grow_box["MINING"]))
         sql.buying_grow_box(db_path=config.DB_PATH,
                             telegram_id=update.callback_query.message.chat.id,
                             name=grow_box["SIZE"],

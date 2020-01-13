@@ -16,7 +16,8 @@ def ripening_number_score(last_collect):
                            hour=utc_time.hour - 1, minute=config.RIPENING["MINUTE"], second=0, microsecond=0
                        )
                        ]
-    return int((last_ripening - last_collect + timedelta(hours=1)).total_seconds() // 3600)
+    ripening_number = int((last_ripening - last_collect + timedelta(hours=1)).total_seconds() // 3600)
+    return (1 - config.REDUCTION_FACTOR ** ripening_number) / (1 - config.REDUCTION_FACTOR)
 
 
 def money_transfer(high):
@@ -34,7 +35,7 @@ def money_transfer(high):
 def farm_stats(telegram_id):
     boxes, amendments, last_collect = sql.get_all_farm(db_path=config.DB_PATH, telegram_id=telegram_id)
     number = ripening_number_score(last_collect=last_collect)
-    return number, boxes, [number * box * size["MINING"] - amendment
+    return number, boxes, [int(number * box * size["MINING"] - amendment)
                            for box, size, amendment in zip(boxes, config.SIZES, amendments)]
 
 
