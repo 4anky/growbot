@@ -1,5 +1,3 @@
-import logging
-
 from telegram import ParseMode
 
 from functional_modules import utility
@@ -7,10 +5,6 @@ import config
 import menu_bot as menu
 import states as state
 import sql
-
-LOGS_PATH = __file__.replace(r"functional_modules\home.py", "logs/home.log")
-
-logging.basicConfig(filename=LOGS_PATH, level=logging.INFO)
 
 
 def home(update, _):
