@@ -1,3 +1,4 @@
+from datetime import datetime
 from random import choices, randint
 
 from telegram import ParseMode
@@ -187,7 +188,14 @@ def street(update, context):
     context.job_queue.run_once(callback=waiting_1_sec, when=3.25, context=update.message.chat_id)
 
     weights, price, escape_weights = [], 0, []
-    for place in config.PLACES:
+    payd_time = sql.get_from_table(
+        db_path=config.DB_PATH,
+        telegram_id=update.message.chat.id,
+        table="paid",
+        field="safer_street"
+    )
+    places = config.PLACES if payd_time < datetime.today() else config.PLACES_PAY
+    for place in places:
         if place["NAME"] == update.message.text:
             weights, price, escape_weights = place["PROB"], place["PRICE"], place["ESCAPE"]
 
@@ -197,7 +205,7 @@ def street(update, context):
             db_path=config.DB_PATH, telegram_id=update.message.chat.id, high=sold_high, money=earned_money)
         context.job_queue.run_once(
             callback=street_first_event,
-            when=4.5,
+            when=5,
             context=("sell", update.message.chat.id, sold_high, unsold_high, earned_money)
         )
         return state.SELL_GOODS

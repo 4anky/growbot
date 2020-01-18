@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import sqlite3
 
 import config
@@ -318,3 +318,47 @@ def get_users_table(db_path):
     finally:
         connection.close()
     return result
+
+
+def get_all_tables_name(db_path):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    all_table_names = []
+    try:
+        cursor.execute("SELECT tbl_name FROM sqlite_master WHERE type = 'table'")
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        all_table_names = [table[0] for table in cursor.fetchall()]
+    finally:
+        connection.close()
+    return all_table_names
+
+
+def create_new_table(db_path):
+    default_date = datetime(year=1993, month=8, day=7, hour=15, minute=35, second=0, microsecond=0)
+    [create, select, insert] = open(file=config.NEW_TABLE_PATH, mode='r').read().split(sep="\n")
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    cursor.execute(create)
+    connection.commit()
+    cursor.execute(select)
+    for user_id in cursor.fetchall():
+        cursor.execute(insert, (user_id[0], default_date))
+    connection.commit()
+    connection.close()
+
+
+def safer_street(db_path, telegram_id, duration):
+    connection = create_connection(db_path=db_path)
+    cursor = connection.cursor()
+    new_time_to_db = max(
+        datetime.today(),
+        get_from_table(db_path=db_path, telegram_id=telegram_id, table="paid", field="safer_street")
+    ) + timedelta(days=duration)
+    try:
+        cursor.execute(config.SAFER_STREET, (new_time_to_db, telegram_id))
+        connection.commit()
+    finally:
+        connection.close()
+        return new_time_to_db

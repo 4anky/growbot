@@ -3,6 +3,7 @@ from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandl
 import config
 import dev
 import message_filters as filters
+import paid
 import states as state
 from functional_modules import casino, home, info, markets, sell_goods, side_job, train, utility
 
@@ -152,7 +153,10 @@ dev_commands = {
     "players": CommandHandler(command="players", callback=dev.players),
     "users": CommandHandler(command="users", callback=dev.users),
     "farm": CommandHandler(command="farm", callback=dev.farm, pass_args=True),
-    "msg": CommandHandler(command="msg", callback=dev.msg, pass_args=True)
+    "msg": CommandHandler(command="msg", callback=dev.msg, pass_args=True),
+    "ss_3d": CommandHandler(command="ss_3d", callback=paid.safer_street_3d),
+    "ss_10d": CommandHandler(command="ss_10d", callback=paid.safer_street_10d),
+    "ss_30d": CommandHandler(command="ss_30d", callback=paid.safer_street_30d),
 }
 
 for handler in query_handlers.values():

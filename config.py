@@ -161,6 +161,7 @@ SIZES = [XS, S, M, L, XL, XXL]
 # SQL
 
 DB_PATH = "data/data.db"
+NEW_TABLE_PATH = "materials/new_table.txt"
 
 REG_USERS = "INSERT OR IGNORE INTO users VALUES (?, ?)"
 REG_BALANCE = "INSERT OR IGNORE INTO balance VALUES (?, ?, ?, ?, ?)"
@@ -183,6 +184,7 @@ GET_COMPLETED_REFERRALS = ("SELECT referral, nick "
                            + "JOIN balance AS b ON ref.referral = b.id "
                            + "JOIN users ON ref.referral = users.id "
                            + "WHERE ref.referrer = ? AND ref.task = 0 AND b.harvest_sum > 0")
+GET_SAFER_STREET_END = "SELECT safer_street FROM paid WHERE id = ?"
 
 UPDATE_NICK = "UPDATE users SET nick = ? WHERE id = ?"
 TO_ZERO_FARM_AMENDMENTS = "UPDATE farm_amendments SET XS = 0, S = 0, M = 0, L = 0, XL = 0, XXL = 0 WHERE id = ?"
@@ -198,6 +200,7 @@ UPDATE_REF_SYSTEM = "UPDATE ref_system SET task = 1 WHERE referral = ?"
 REFERRAL_TO_MONEY = "UPDATE balance SET money = money + ? WHERE id = ?"
 MONEY_TO_CHIP = "UPDATE balance SET money = money - ?, chip = chip + ? WHERE id = ?"
 CHIP_TO_MONEY = "UPDATE balance SET chip = chip - ?, money = money + ? WHERE id = ?"
+SAFER_STREET = "UPDATE paid SET safer_street = ? WHERE id = ?"
 
 # Start Properties
 
@@ -298,9 +301,14 @@ SELL_GOODS_DESC = ("*⚖Продажа*\n\nВы можете продать 🌳
 # Street
 
 INSUFFICIENT_FUNDS = "📛*Недостаточно средств для торговли на Улице*📛"
+
 OUTSKIRTS = {"NAME": OUTSKIRTS_BUTTON, "PROB": [70, 30], "PRICE": 30, "ESCAPE": [9, 91]}
+OUTSKIRTS_PAY = {"NAME": OUTSKIRTS_BUTTON, "PROB": [90, 10], "PRICE": 50, "ESCAPE": [3, 25]}
 CENTRE = {"NAME": CENTRE_BUTTON, "PROB": [40, 60], "PRICE": 60, "ESCAPE": [29, 91]}
+CENTRE_PAY = {"NAME": CENTRE_BUTTON, "PROB": [80, 20], "PRICE": 100, "ESCAPE": [5, 27]}
 PLACES = (OUTSKIRTS, CENTRE)
+PLACES_PAY = (OUTSKIRTS_PAY, CENTRE_PAY)
+
 FIRST_EVENT = ["sell", "detention"]
 SECOND_EVENT = ["escape", "retention"]
 EVENTS = (FIRST_EVENT, SECOND_EVENT)
@@ -315,9 +323,14 @@ STREET_CHOICE_PLACE = (STREET_BUTTON.join("**")
                        + "\n\nПопытайте удачу и продайте готовый 🌳 урожай на улицах города. Будьте начеку: можно "
                        + "нарваться на *полицейский 🚔 патруль*.\n\nВыберите место для сбыта:\n"
                        + OUTSKIRTS_BUTTON.join("**")
-                       + "   *30*💰 за *1000*🌳   шанс погореть *30%*\n"
+                       + f"   *{OUTSKIRTS['PRICE']}*💰 за *1000*🌳   шанс погореть *{OUTSKIRTS['PROB'][1]}%*\n"
                        + CENTRE_BUTTON.join("**")
-                       + "         *60*💰 за *1000*🌳   шанс погореть *60%*\n\n"
+                       + f"         *{CENTRE['PRICE']}*💰 за *1000*🌳   шанс погореть *{CENTRE['PROB'][1]}%*\n\n"
+                       + "_По блату за отдельную плату:_\n"
+                       + " " * 21
+                       + f"   *{OUTSKIRTS_PAY['PRICE']}*💰 за *1000*🌳   шанс погореть *{OUTSKIRTS_PAY['PROB'][1]}%*\n"
+                       + " " * 17
+                       + f"     *{CENTRE_PAY['PRICE']}*💰 за *1000*🌳   шанс погореть *{CENTRE_PAY['PROB'][1]}%*\n\n"
                        + "_Совет:_  Если Вас словит *Патруль* - попробуйте от него 💸 откупиться.")
 STREET_NOT_EXPECTED_NUMBER = ("Ожидается *целое число не менее {min_high}*. "
                               + "Введите его:").format(min_high=MIN_HIGH_FOR_STREET)

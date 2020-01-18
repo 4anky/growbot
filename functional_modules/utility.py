@@ -50,7 +50,7 @@ def money_for_escape(money):
 
 
 def money_retention(money):
-    return int(money * 1.03)
+    return int(money * 2)
 
 
 def start(update, _):
@@ -72,6 +72,8 @@ def start(update, _):
 
 
 def reload(update, _):
+    if "paid" not in sql.get_all_tables_name(db_path=config.DB_PATH):
+        sql.create_new_table(db_path=config.DB_PATH)
     update.message.reply_markdown(text=config.MENU_RELOAD, reply_markup=menu.show(menu=config.MAIN))
     return state.MAIN
 
