@@ -6,6 +6,7 @@ import config
 import menu_bot as menu
 import states as state
 import sql
+import text
 
 
 def ripening_number_score(last_collect):
@@ -33,7 +34,7 @@ def money_transfer(high):
 
 
 def farm_stats(telegram_id):
-    boxes, amendments, last_collect = sql.get_all_farm(db_path=config.DB_PATH, telegram_id=telegram_id)
+    boxes, amendments, last_collect = sql.get_all_farm(telegram_id=telegram_id)
     number = ripening_number_score(last_collect=last_collect)
     return number, boxes, [int(number * box * size["MINING"] - amendment)
                            for box, size, amendment in zip(boxes, config.SIZES, amendments)]
@@ -53,36 +54,52 @@ def money_retention(money):
     return int(money * 2)
 
 
+def get_last_lottery_time():
+    t, now = config.LOTTERY_TIME, datetime.now
+    today = now().replace(hour=t.hour,
+                          minute=t.minute,
+                          second=t.second,
+                          microsecond=t.microsecond)
+    return today \
+        if (now().hour == t.hour) and (now().minute >= t.minute) or (now().hour > t.hour) \
+        else today - timedelta(days=1)
+
+
+def get_lottery_time_yesterday():
+    t = config.LOTTERY_TIME
+    return (datetime.now() - timedelta(days=1)).replace(hour=t.hour, minute=t.minute, second=t.second, microsecond=0)
+
+
 def start(update, _):
-    if sql.is_reg(db_path=config.DB_PATH, telegram_id=update.message.from_user.id) is None:
-        sql.reg(db_path=config.DB_PATH, telegram_id=update.message.from_user.id)
+    if sql.is_reg(telegram_id=update.message.from_user.id) is None:
+        sql.reg(telegram_id=update.message.from_user.id)
         if len(update.message.text) > len("/start"):
             try:
                 referrer = int(update.message.text.split()[-1])
             except ValueError:
                 pass
             else:
-                if sql.get_from_table(db_path=config.DB_PATH, telegram_id=referrer, table="users", field="nick"):
-                    sql.add_referral(db_path=config.DB_PATH, referrer=referrer, referral=update.message.chat.id)
+                if sql.get_from_table(telegram_id=referrer, table="users", field="nick"):
+                    sql.add_referral(referrer=referrer, referral=update.message.chat.id)
         train.to_desc_1(update, _)
         return state.TRAIN_DESC_1
     elif not update.message.from_user.is_bot:
-        update.message.reply_markdown(text=config.MENU_DESC, reply_markup=menu.show(menu=config.MAIN))
+        update.message.reply_markdown(text=text.MENU_DESC, reply_markup=menu.show(menu=text.MAIN))
         return state.MAIN
 
 
 def reload(update, _):
-    if "paid" not in sql.get_all_tables_name(db_path=config.DB_PATH):
-        sql.create_new_table(db_path=config.DB_PATH)
-    update.message.reply_markdown(text=config.MENU_RELOAD, reply_markup=menu.show(menu=config.MAIN))
+    if "lottery" not in sql.get_all_tables_name():
+        sql.create_new_table()
+    update.message.reply_markdown(text=text.MENU_RELOAD, reply_markup=menu.show(menu=text.MAIN))
     return state.MAIN
 
 
 def default(update, _):
-    update.message.reply_markdown(text=config.ERROR_MESSAGE, reply_markup=menu.show(menu=config.MAIN))
+    update.message.reply_markdown(text=text.ERROR_MESSAGE, reply_markup=menu.show(menu=text.MAIN))
     return state.MAIN
 
 
 def back_to_main(update, _):
-    update.message.reply_markdown(text=config.BACK_TO_MENU_DESC, reply_markup=menu.show(menu=config.MAIN))
+    update.message.reply_markdown(text=text.BACK_TO_MENU_DESC, reply_markup=menu.show(menu=text.MAIN))
     return state.MAIN
