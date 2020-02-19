@@ -13,14 +13,16 @@ import states as state
 import text
 
 
-def casino(update, _):
+def casino(update, context):
+    if context.user_data["in_game_flag"] is not None:
+        return state.TWENTY_ONE
     update.message.reply_markdown(text=text.CASINO_DESC, reply_markup=menu.show(menu=text.CASINO))
     return state.CASINO
 
 
-def blackjack(update, _):
-    update.message.reply_markdown(text=text.BJ_ENTER_BET, reply_markup=menu.show(menu=text.BACK))
-    return state.BJ_BET
+def twenty_one(update, _):
+    update.message.reply_markdown(text=text.TWENTY_ONE_DESC, reply_markup=menu.show(menu=text.TWENTY_ONE))
+    return state.TWENTY_ONE
 
 
 def dice(update, _):
@@ -122,14 +124,13 @@ def buy_ticket(update, context):
     name, price = context.user_data['TICKET_NAME'], context.user_data['TICKET_PRICE']
 
     if (datetime.now().hour == config.LOTTERY_TIME.hour) \
-            and (abs(datetime.now().minute - config.LOTTERY_TIME.minute) <= config.LOTTERY_BREAK):
+            and (abs(datetime.now().minute - config.LOTTERY_TIME.minute) < config.LOTTERY_BREAK):
         update.message.reply_markdown(text=text.AROUND_LOTTERY_TEXT)
         return state.BUY_AND_WATCH
     money_in_balance = sql.get_from_table(telegram_id=update.message.chat.id, table="balance", field="money")
     if money_in_balance < price:
         update.message.reply_markdown(text=text.PURCHASE_ERROR)
         return state.BUY_AND_WATCH
-    print(utility.get_last_lottery_time())
     if sql.check_lottery_ticket(telegram_id=update.message.chat.id, name=name, time=utility.get_last_lottery_time()):
         update.message.reply_markdown(text=text.ALREADY_PURCHASED)
         return state.BUY_AND_WATCH
@@ -160,17 +161,17 @@ def watch_translation(update, context):
 def lottery(context):
     (NICK, ID, TIME, _, _) = (0, 1, 2, 3, 4)
     tickets_data = {name: price_dict for name, price_dict in zip(text.TICKETS_NAME, config.TICKETS)}
-    print(utility.get_lottery_time_yesterday())
-    players = sql.lottery(time=utility.get_lottery_time_yesterday())
-    for ticket in players.keys():
-        if players[ticket]:
-            shuffle(players[ticket])
-            winner = choice(players[ticket])
-            prize = len(players[ticket]) * tickets_data[ticket]['PRICE']
+
+    lottery_data = sql.lottery(time=utility.get_lottery_time_yesterday())
+    for ticket_name in lottery_data.keys():
+        if lottery_data[ticket_name]:
+            shuffle(lottery_data[ticket_name])
+            winner = choice(lottery_data[ticket_name])
+            prize = len(lottery_data[ticket_name]) * tickets_data[ticket_name]['PRICE']
             sql.save_winner_and_get_prize(telegram_id=winner[ID], time=winner[TIME], prize=prize)
-            for player in players[ticket]:
+            for player in lottery_data[ticket_name]:
                 message = (text.LOSERS_MESSAGE if player != winner else text.WINNER_MESSAGE).format(
-                    name=ticket, winner=winner[NICK], prize=text.three_digits(n=prize))
+                    name=ticket_name, winner=winner[NICK], prize=text.three_digits(n=prize))
                 try:
                     context.bot.send_message(chat_id=player[ID], text=message, parse_mode=ParseMode.MARKDOWN)
                 except BadRequest:

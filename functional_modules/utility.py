@@ -71,6 +71,8 @@ def get_lottery_time_yesterday():
 
 
 def start(update, _):
+    if "twenty_one" not in sql.get_all_tables_name():
+        sql.create_new_table()
     if sql.is_reg(telegram_id=update.message.from_user.id) is None:
         sql.reg(telegram_id=update.message.from_user.id)
         if len(update.message.text) > len("/start"):
@@ -89,8 +91,6 @@ def start(update, _):
 
 
 def reload(update, _):
-    if "lottery" not in sql.get_all_tables_name():
-        sql.create_new_table()
     update.message.reply_markdown(text=text.MENU_RELOAD, reply_markup=menu.show(menu=text.MAIN))
     return state.MAIN
 

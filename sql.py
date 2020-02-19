@@ -37,6 +37,16 @@ GET_PLAYERS_FOR_TRANSLATION = ("SELECT u.nick, l.id, l.buy_time, l.type, l.statu
 GET_LOTTERY_PLAYERS = ("SELECT u.nick, l.id, l.buy_time, l.type, l.status FROM users AS u JOIN lottery AS l"
                        + " ON u.id = l.id WHERE l.buy_time > ? ORDER BY l.type")
 CHECK_LOTTERY_TICKETS = "SELECT * FROM lottery WHERE id  = ? AND buy_time >= ? AND type = ? AND status = 0"
+GET_GAMES_NUMBER_RATING = ("SELECT u.nick, t.games FROM users AS u JOIN twenty_one AS t ON u.id = t.id "
+                           + "WHERE t.games > 0 ORDER BY t.games DESC, u.nick ASC LIMIT 20")
+GET_WIN_PERCENT_RATING = ("SELECT u.nick, ROUND(100 * CAST(t.win AS REAL) / t.games, 3) FROM users AS u "
+                          + "JOIN twenty_one AS t ON u.id = t.id WHERE t.games > 20 "
+                          + "ORDER BY ROUND(100 * CAST(t.win AS REAL) / t.games, 3) DESC, u.nick ASC LIMIT 20")
+GET_MAX_WIN_RATING = ("SELECT u.nick, t.max_win FROM users AS u JOIN twenty_one AS t ON u.id = t.id "
+                      + "WHERE t.games > 0 ORDER BY t.max_win DESC, u.nick ASC LIMIT 20")
+GET_MAX_LOSE_RATING = ("SELECT u.nick, t.max_lose FROM users AS u JOIN twenty_one AS t ON u.id = t.id "
+                       + "WHERE t.games > 0 ORDER BY t.max_lose DESC, u.nick ASC LIMIT 20")
+
 
 UPDATE_NICK = "UPDATE users SET nick = ? WHERE id = ?"
 TO_ZERO_FARM_AMENDMENTS = "UPDATE farm_amendments SET XS = 0, S = 0, M = 0, L = 0, XL = 0, XXL = 0 WHERE id = ?"
@@ -382,6 +392,7 @@ def get_all_tables_name():
     except sqlite3.Error as Error:
         print(Error)
     else:
+        # answer = cursor.fetchall()
         all_table_names = [table[0] for table in cursor.fetchall()]
     finally:
         connection.close()
@@ -389,10 +400,12 @@ def get_all_tables_name():
 
 
 def create_new_table():
-    create = open(file=NEW_TABLE_PATH, mode='r').read()
+    [create, insert, update] = open(file=NEW_TABLE_PATH, mode='r').read().split(sep="\n")
     connection = create_connection()
     cursor = connection.cursor()
     cursor.execute(create)
+    cursor.execute(insert)
+    cursor.execute(update, (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
     connection.commit()
     connection.close()
 
@@ -483,3 +496,91 @@ def save_winner_and_get_prize(telegram_id, time, prize, status=1):
         connection.commit()
     finally:
         connection.close()
+
+
+def chips_in_balance(telegram_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+    result = []
+    try:
+        cursor.execute("SELECT chip FROM balance WHERE id = ?", (telegram_id, ))
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        result = cursor.fetchone()[0]
+    finally:
+        connection.close()
+    return result
+
+
+def get_twenty_one_data(telegram_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+    result = None
+    try:
+        cursor.execute("SELECT t.id, t.games, t.win, t.lose, t.max_win, t.max_lose, t.total_win, t.nature_21, "
+                       "t.five_pictures, t.three_sevens, t.golden, t.six_seven_eight, b.chip  FROM twenty_one AS t "
+                       "JOIN balance AS b ON t.id = b.id WHERE t.id = ?", (telegram_id, ))
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        result = list(cursor.fetchone())
+    finally:
+        connection.close()
+    return result
+
+
+def update_twenty_one_data(data, prize):
+    [telegram_id, games, win, lose, max_win, max_lose, total_win,
+     nature_21, five_pictures, three_sevens, golden, six_seven_eight] = data
+    connection = create_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("UPDATE twenty_one SET games = ?, win = ?, lose = ?, max_win = ?, max_lose = ?, total_win = ?, "
+                       "nature_21 = ?, five_pictures = ?, three_sevens = ?, golden = ?, six_seven_eight = ? "
+                       "WHERE id = ?", (games, win, lose, max_win, max_lose, total_win, nature_21, five_pictures,
+                                        three_sevens, golden, six_seven_eight, telegram_id))
+        cursor.execute("UPDATE balance SET chip = chip + ? WHERE id = ?", (prize, telegram_id))
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        connection.commit()
+    finally:
+        connection.close()
+
+
+def twenty_one_stats(telegram_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+    result = None
+    try:
+        cursor.execute("SELECT users.nick, t.id, t.games, t.win, t.lose, t.max_win, t.max_lose, t.total_win, "
+                       "t.nature_21, t.five_pictures, t.three_sevens, t.golden, t.six_seven_eight, b.chip FROM users "
+                       "JOIN twenty_one AS t ON users.id = t.id JOIN balance AS b ON users.id = b.id WHERE t.id = ?",
+                       (telegram_id, ))
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        result = cursor.fetchone()
+    finally:
+        connection.close()
+    return result
+
+
+def twenty_one_rating(key):
+    twenty_one_rating_dict = {"games_number": GET_GAMES_NUMBER_RATING,
+                              "win_percent": GET_WIN_PERCENT_RATING,
+                              "max_win": GET_MAX_WIN_RATING,
+                              "max_lose": GET_MAX_LOSE_RATING}
+    connection = create_connection()
+    cursor = connection.cursor()
+    result = None
+    try:
+        cursor.execute(twenty_one_rating_dict[key])
+    except sqlite3.Error as Error:
+        print(Error)
+    else:
+        result = cursor.fetchall()
+    finally:
+        connection.close()
+    return result
