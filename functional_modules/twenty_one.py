@@ -86,8 +86,6 @@ def start_of_game():
 
 
 def entry(update, context):
-    if context.user_data["in_game_flag"] is not None:
-        return state.TWENTY_ONE
     if not sql.get_from_table(telegram_id=update.message.chat.id, table="balance", field="chip"):
         update.message.reply_markdown(text=text.INSUFFICIENT_CHIPS)
         return state.TWENTY_ONE
@@ -105,7 +103,6 @@ def entry(update, context):
               + text.TO_ENTER_BET),
         reply_markup=menu.no_menu())
     context.user_data["entry_message_id"] = update.message.message_id + 1
-    context.user_data["in_game_flag"] = True
     return state.TWENTY_ONE_ENTER_BET
 
 
@@ -241,7 +238,7 @@ def more(update, context):
             if situation["reply_markup"] is None:
                 sql.update_twenty_one_data(data=context.user_data["data"][:-1], prize=context.user_data["prize"])
                 context.job_queue.run_once(callback=job_back_to_twenty_one_menu, when=2, context=telegram_id)
-                context.user_data["in_game_flag"] = None
+                context.user_data["in_game_flag"] = False
             break
 
 
@@ -360,7 +357,7 @@ def yourself(update, context):
     context.job_queue.run_once(callback=job_back_to_twenty_one_menu,
                                when=repeat * len(banker_situations) + 1.5,
                                context=telegram_id)
-    context.user_data["in_game_flag"] = None
+    context.user_data["in_game_flag"] = False
 
 
 def what_is_the_blind_situation(you_points, b_points, b_max, b_number):
@@ -452,7 +449,7 @@ def blind(update, context):
     context.job_queue.run_once(callback=job_back_to_twenty_one_menu,
                                when=repeat * len(blind_situations) + 1.5,
                                context=telegram_id)
-    context.user_data["in_game_flag"] = None
+    context.user_data["in_game_flag"] = False
 
 
 def finish(update, context):
@@ -477,10 +474,12 @@ def finish(update, context):
                                   reply_markup=None,
                                   parse_mode=ParseMode.MARKDOWN)
     context.job_queue.run_once(callback=job_back_to_twenty_one_menu, when=1.5, context=telegram_id)
-    context.user_data["in_game_flag"] = None
+    context.user_data["in_game_flag"] = False
 
 
 def game(update, context):
+    if context.user_data["in_flag_game"]:
+        return state.TWENTY_ONE
     try:
         chips_bet = int(update.message.text)
     except ValueError:
@@ -497,6 +496,7 @@ def game(update, context):
             update.message.reply_markdown(text=text.FEW_CHIPS_FOR_BET)
             return state.TWENTY_ONE_ENTER_BET
         else:
+            context.user_data["in_game_flag"] = True
             context.user_data["BET"] = chips_bet
             update.message.reply_markdown(text=text.BET_IS_ACCEPTED, reply_markup=menu.no_menu())
             context.job_queue.run_once(
@@ -509,7 +509,6 @@ def game(update, context):
                          context.user_data['YOU'],
                          context.user_data["BOTTOM_CARD"],
                          context.user_data['entry_message_id']))
-            context.user_data["in_game_flag"] = True
             return state.TWENTY_ONE
 
 
@@ -561,7 +560,7 @@ def all_is_ok(update, context):
 
 
 def rules(update, context):
-    if context.user_data["in_game_flag"] is not None:
+    if context.user_data["in_game_flag"]:
         return state.TWENTY_ONE
     context.bot.send_message(
         chat_id=update.message.chat.id,
@@ -572,7 +571,7 @@ def rules(update, context):
 
 
 def rating(update, context):
-    if context.user_data["in_game_flag"] is not None:
+    if context.user_data["in_game_flag"]:
         return state.TWENTY_ONE
     update.message.reply_markdown(text=text.RATING_DESC, reply_markup=menu.show(menu=text.TWENTY_ONE_RATING))
     return state.TWENTY_ONE_RATING
@@ -631,7 +630,7 @@ def max_lose_rating(update, _):
 
 
 def my_stats(update, context):
-    if context.user_data["in_game_flag"] is not None:
+    if context.user_data["in_game_flag"]:
         return state.TWENTY_ONE
     stats = sql.twenty_one_stats(telegram_id=update.message.chat.id)
     win_percent = round(100 * stats[3] / stats[2], 3) if stats[2] else 0

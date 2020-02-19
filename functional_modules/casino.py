@@ -14,13 +14,14 @@ import text
 
 
 def casino(update, context):
-    if context.user_data["in_game_flag"] is not None:
+    if context.user_data["in_game_flag"]:
         return state.TWENTY_ONE
     update.message.reply_markdown(text=text.CASINO_DESC, reply_markup=menu.show(menu=text.CASINO))
     return state.CASINO
 
 
-def twenty_one(update, _):
+def twenty_one(update, context):
+    context.user_data["in_game_flag"] = False
     update.message.reply_markdown(text=text.TWENTY_ONE_DESC, reply_markup=menu.show(menu=text.TWENTY_ONE))
     return state.TWENTY_ONE
 
