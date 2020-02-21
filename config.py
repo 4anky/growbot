@@ -75,6 +75,18 @@ POINTS = (6, 7, 8, 9, 10, 2, 3, 4, 11)
 CARD_DECK = [f"{DIGNITY}{SUIT}" for DIGNITY in DIGNITIES for SUIT in SUITS]
 CARDS_POINTS = {DIGNITY + SUIT: POINT for DIGNITY, POINT in zip(DIGNITIES, POINTS) for SUIT in SUITS}
 
+MORE_PATTERN = "more"
+YOURSELF_PATTERN = "yourself"
+BLIND_PATTERN = "blind"
+FINISH_PATTERN = "finish"
+EMPTY_PATTERN = "empty"
+
+MAIN_RULES_PATTERN = "main_rules"
+FOR_WIN_PATTERN = "for_win"
+BLIND_RULES_PATTERN = "mode_blind_rules"
+POINTS_PATTERN = "points"
+ALL_OK_PATTERN = "all_is_ok"
+
 MIN_CHIPS_FOR_TWENTY_ONE = 1
 
 # Street
@@ -111,17 +123,3 @@ BOB_MARLEY = {"PRICE": 1200}
 ZION = {"PRICE": 15000}
 JAH = {"PRICE": 1000000}
 TICKETS = [BABYLON, BOB_MARLEY, ZION, JAH]
-
-# Twenty One
-
-MORE_PATTERN = "more"
-YOURSELF_PATTERN = "yourself"
-BLIND_PATTERN = "blind"
-FINISH_PATTERN = "finish"
-EMPTY_PATTERN = "empty"
-
-MAIN_RULES_PATTERN = "main_rules"
-FOR_WIN_PATTERN = "for_win"
-BLIND_RULES_PATTERN = "mode_blind_rules"
-POINTS_PATTERN = "points"
-ALL_OK_PATTERN = "all_is_ok"

@@ -43,9 +43,9 @@ GET_WIN_PERCENT_RATING = ("SELECT u.nick, ROUND(100 * CAST(t.win AS REAL) / t.ga
                           + "JOIN twenty_one AS t ON u.id = t.id WHERE t.games > 20 "
                           + "ORDER BY ROUND(100 * CAST(t.win AS REAL) / t.games, 3) DESC, u.nick ASC LIMIT 20")
 GET_MAX_WIN_RATING = ("SELECT u.nick, t.max_win FROM users AS u JOIN twenty_one AS t ON u.id = t.id "
-                      + "WHERE t.games > 0 ORDER BY t.max_win DESC, u.nick ASC LIMIT 20")
+                      + "WHERE t.win > 0 ORDER BY t.max_win DESC, u.nick ASC LIMIT 20")
 GET_MAX_LOSE_RATING = ("SELECT u.nick, t.max_lose FROM users AS u JOIN twenty_one AS t ON u.id = t.id "
-                       + "WHERE t.games > 0 ORDER BY t.max_lose DESC, u.nick ASC LIMIT 20")
+                       + "WHERE t.lose > 0 ORDER BY t.max_lose DESC, u.nick ASC LIMIT 20")
 
 
 UPDATE_NICK = "UPDATE users SET nick = ? WHERE id = ?"

@@ -14,8 +14,7 @@ import text
 
 
 def casino(update, context):
-    if context.user_data["in_game_flag"]:
-        return state.TWENTY_ONE
+    context.user_data["in_game_flag"] = False
     update.message.reply_markdown(text=text.CASINO_DESC, reply_markup=menu.show(menu=text.CASINO))
     return state.CASINO
 
@@ -40,7 +39,9 @@ def enter_money(update, context):
     money, _, chip = sql.get_balance(telegram_id=update.message.chat.id)
     context.user_data["money"] = money
     update.message.reply_markdown(
-        text=text.MONEY_TO_CHIP_TEXT.format(money=money, chip=chip), reply_markup=menu.show(menu=text.BACK))
+        text=text.MONEY_TO_CHIP_TEXT.format(money=text.three_digits(n=money),
+                                            chip=text.three_digits(n=chip)),
+        reply_markup=menu.show(menu=text.BACK))
     return state.TO_CHIP
 
 
@@ -55,14 +56,18 @@ def money_to_chips(update, context):
             update.message.reply_markdown(text=text.NOT_POSITIVE_NUMBER, reply_markup=menu.show(menu=text.BACK))
             return state.TO_CHIP
         elif money_for_exchange > context.user_data["money"]:
-            update.message.reply_markdown(text=text.NOT_ENOUGH_MONEY.format(money=context.user_data["money"]))
+            update.message.reply_markdown(
+                text=text.NOT_ENOUGH_MONEY.format(money=text.three_digits(n=context.user_data["money"]))
+            )
             return state.TO_CHIP
         else:
             chips = money_for_exchange * config.CHIPS_FOR_CURRENCY_UNIT - config.COMMISSION
             sql.money_to_chips(telegram_id=update.message.chat.id, money=money_for_exchange, chip=chips)
             money, _, chip = sql.get_balance(telegram_id=update.message.chat.id)
             update.message.reply_markdown(
-                text=text.BUY_CHIPS.format(new=chips, money=money, chip=chip),
+                text=text.BUY_CHIPS.format(new=text.three_digits(n=chips),
+                                           money=text.three_digits(n=money),
+                                           chip=text.three_digits(n=chip)),
                 reply_markup=menu.show(menu=text.EXCHANGE))
             return state.EXCHANGE
 
@@ -71,7 +76,9 @@ def enter_chip(update, context):
     money, _, chip = sql.get_balance(telegram_id=update.message.chat.id)
     context.user_data["chip"] = chip
     update.message.reply_markdown(
-        text=text.CHIP_TO_MONEY_TEXT.format(money=money, chip=chip), reply_markup=menu.show(menu=text.BACK))
+        text=text.CHIP_TO_MONEY_TEXT.format(money=text.three_digits(n=money),
+                                            chip=text.three_digits(n=chip)),
+        reply_markup=menu.show(menu=text.BACK))
     return state.TO_MONEY
 
 
@@ -86,19 +93,22 @@ def chips_to_money(update, context):
             update.message.reply_markdown(text=text.LESS_THAN_COMMISSION, reply_markup=menu.show(menu=text.BACK))
             return state.TO_MONEY
         elif chips_for_exchange > context.user_data["chip"]:
-            update.message.reply_markdown(text=text.NOT_ENOUGH_CHIP.format(chip=context.user_data["chip"]))
+            update.message.reply_markdown(
+                text=text.NOT_ENOUGH_CHIP.format(chip=text.three_digits(n=context.user_data["chip"]))
+            )
             return state.TO_MONEY
         else:
             new_money = (chips_for_exchange - config.COMMISSION) // config.CHIPS_FOR_CURRENCY_UNIT
             changed_chips = new_money * config.CHIPS_FOR_CURRENCY_UNIT
-            # unchanged_chips = (chips_for_exchange - config.COMMISSION) % config.CHIPS_FOR_CURRENCY_UNIT
             sql.chips_to_money(
                 telegram_id=update.message.chat.id,
                 money=new_money,
                 chip=changed_chips + config.COMMISSION)
             money, _, chip = sql.get_balance(telegram_id=update.message.chat.id)
             update.message.reply_markdown(
-                text=text.SELL_CHIPS.format(new=new_money, money=money, chip=chip),
+                text=text.SELL_CHIPS.format(new=text.three_digits(n=new_money),
+                                            money=text.three_digits(n=money),
+                                            chip=text.three_digits(n=chip)),
                 reply_markup=menu.show(menu=text.EXCHANGE))
             return state.EXCHANGE
 

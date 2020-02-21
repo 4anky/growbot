@@ -1,7 +1,7 @@
 from copy import deepcopy
 from random import shuffle
 
-from telegram import ParseMode
+from telegram import ParseMode, TelegramError
 
 import config
 import menu_bot as menu
@@ -28,8 +28,8 @@ def calc_points(deck, number):
 def job_first_cards_message(context):
     chat_id, game_n, bet, banker, you, bottom_card, entry_message_id = context.job.context
     context.bot.delete_message(chat_id=chat_id, message_id=entry_message_id)
-    (keyboard, patterns) = (text.INLINE_BLIND, text.BLIND_PATTERNS) if you['points'] == 6 \
-        else (text.INLINE_MAIN, text.MAIN_PATTERNS)
+    (keyboard, patterns) = \
+        (text.INLINE_BLIND, text.BLIND_PATTERNS) if you['points'] == 6 else (text.INLINE_MAIN, text.MAIN_PATTERNS)
     context.bot.send_message(
         chat_id=chat_id,
         text=text.FIRST_CARD_MESSAGE.format(n=text.three_digits(n=game_n),
@@ -196,32 +196,32 @@ def more_situations(context):
                                                               patterns=text.MAIN_PATTERNS)},
             "exceeded": {"condition": (you['points'] > 22 or you['points'] == 22 and you_number > 2),
                          "do": do_exceeded,
-                         "game_message": game_message + f"\n*Результат:* Проигрыш _(Перебор)_",
+                         "game_message": game_message + f"\n*Результат:* ☠Проигрыш _(Перебор)_",
                          "reply_markup": None},
             "twenty_one": {"condition": (you['points'] == 21 and not you_number == 2 and not min_point == 7
                                          and not (min_point == 6 and max_point == 8)),
                            "do": do_twenty_one,
-                           "game_message": game_message + f"\n*Результат:* Выигрыш _(21 очко)_",
+                           "game_message": game_message + f"\n*Результат:* 🎉Выигрыш _(21 очко)_",
                            "reply_markup": None},
             "five_pictures": {"condition": you_number == 5 and max_point <= 4,
                               "do": do_five_pictures,
-                              "game_message": game_message + f"\n*Результат:* Выигрыш _(5 картинок)_",
+                              "game_message": game_message + f"\n*Результат:* 🎉Выигрыш _(5 картинок)_",
                               "reply_markup": None},
             "nature_21": {"condition": you['points'] == 21 and you_number == 2,
                           "do": do_nature_21,
-                          "game_message": game_message + f"\n*Результат:* Выигрыш _(Натуральное 21)_",
+                          "game_message": game_message + f"\n*Результат:* 🎉Выигрыш _(Натуральное 21)_",
                           "reply_markup": None},
             "777": {"condition": you['points'] == 21 and min_point == 7,
                     "do": do_777,
-                    "game_message": game_message + f"\n*Результат:* Выигрыш _(777) Двойной выигрыш!_",
+                    "game_message": game_message + f"\n*Результат:* 🎉🎉Выигрыш _(777) Двойной выигрыш!_",
                     "reply_markup": None},
             "678": {"condition": you['points'] == 21 and min_point == 6 and max_point == 8,
                     "do": do_678,
-                    "game_message": game_message + f"\n*Результат:* Выигрыш _(678) Двойной выигрыш!_",
+                    "game_message": game_message + f"\n*Результат:* 🎉🎉Выигрыш _(678) Двойной выигрыш!_",
                     "reply_markup": None},
             "golden": {"condition": you['points'] == 22 and you_number == 2,
                        "do": do_golden,
-                       "game_message": game_message + f"\n*Результат:* Выигрыш _(Золотое 21)_",
+                       "game_message": game_message + f"\n*Результат:* 🎉Выигрыш _(Золотое 21)_",
                        "reply_markup": None}}
 
 
@@ -302,24 +302,24 @@ def what_is_the_situation(data):
                                      "end_of_message_game": None,
                                      "do": b_continuation},
                   "b_five_pictures": {"condition": b_number == 5 and b_max_point <= 4,
-                                      "end_of_message_game": "\n*Результат:* Проигрыш _(5 картинок у Банкира)_",
+                                      "end_of_message_game": "\n*Результат:* ☠Проигрыш _(5 картинок у Банкира)_",
                                       "do": b_five_pictures},
                   "b_win": {"condition": 17 <= b_points <= 20 and (
                           b_number != 5 or b_number == 5 and b_max_point > 4) and b_points >= you_points,
-                            "end_of_message_game": "\n*Результат:* Проигрыш _(по очкам)_",
+                            "end_of_message_game": "\n*Результат:* ☠Проигрыш _(по очкам)_",
                             "do": b_win},
                   "b_lose": {"condition": 17 <= b_points <= 20 and (
                           b_number != 5 or b_number == 5 and b_max_point > 4) and b_points < you_points,
-                             "end_of_message_game": "\n*Результат:* Выигрыш _(по очкам)_",
+                             "end_of_message_game": "\n*Результат:* 🎉Выигрыш _(по очкам)_",
                              "do": b_lose},
                   "b_exactly_win": {"condition": b_points == 21,
-                                    "end_of_message_game": "\n*Результат:* Проигрыш _(21 у Банкира)_",
+                                    "end_of_message_game": "\n*Результат:* ☠Проигрыш _(21 у Банкира)_",
                                     "do": b_exactly_win},
                   "b_golden": {"condition": b_points == 22 and b_number == 2,
-                               "end_of_message_game": "\n*Результат:* Проигрыш _(Золотое 21 у Банкира)_",
+                               "end_of_message_game": "\n*Результат:* ☠Проигрыш _(Золотое 21 у Банкира)_",
                                "do": b_golden},
                   "b_exactly_lose": {"condition": b_points == 22 and b_number > 2 or b_points > 22,
-                                     "end_of_message_game": "\n*Результат:* Выигрыш _(Перебор у Банкира)_",
+                                     "end_of_message_game": "\n*Результат:* 🎉Выигрыш _(Перебор у Банкира)_",
                                      "do": b_exactly_lose}}
     for situation, data in situations.items():
         if data["condition"]:
@@ -364,29 +364,29 @@ def what_is_the_blind_situation(you_points, b_points, b_max, b_number):
     for situation, data in \
             {"blind_b_golden": {"condition": b_points == 22 and b_number == 2,
                                 "do": b_golden,
-                                "end_message": "\n*Результат:* Проигрыш _(Золотое 21 у Банкира)_"},
+                                "end_message": "\n*Результат:* ☠Проигрыш _(Золотое 21 у Банкира)_"},
              "blind_b_21_or_five_pictures": {"condition": b_points == 21 or (b_number == 5 and b_max <= 4),
                                              "do": b_exactly_win if b_points == 21 else b_five_pictures,
-                                             "end_message": ("\n*Результат:* Проигрыш _(21 очко у Банкира)_"
+                                             "end_message": ("\n*Результат:* ☠Проигрыш _(21 очко у Банкира)_"
                                                              if b_points == 21 else
-                                                             "Проигрыш _(5 картинок у Банкира)_")},
+                                                             "\n*Результат:* ☠Проигрыш _(5 картинок у Банкира)_")},
              "blind_golden": {"condition": b_points < 21 and not (b_number == 5 and b_max <= 4) and you_points == 22,
                               "do": do_golden,
-                              "end_message": "\n*Результат:* Выигрыш _(Золотое 21)_"},
+                              "end_message": "\n*Результат:* 🎉Выигрыш _(Золотое 21)_"},
              "blind_nature_21": {"condition": b_points < 21 and not (b_number == 5 and b_max <= 4) and you_points == 21,
                                  "do": do_nature_21,
-                                 "end_message": "\n*Результат:* Выигрыш _(Натуральное 21)_"},
+                                 "end_message": "\n*Результат:* 🎉Выигрыш _(Натуральное 21)_"},
              "blind_win": {
                  "condition": not (b_number == 5 and b_max <= 4) and 21 > you_points > b_points,
                  "do": b_lose,
-                 "end_message": "\n*Результат:* Выигрыш _(по очкам)_"},
+                 "end_message": "\n*Результат:* 🎉Выигрыш _(по очкам)_"},
              "blind_lose": {
                  "condition": not (b_number == 5 and b_max <= 4) and 21 > b_points >= you_points,
                  "do": b_win,
-                 "end_message": "\n*Результат:* Проигрыш _(по очкам)_"},
+                 "end_message": "\n*Результат:* ☠Проигрыш _(по очкам)_"},
              "blind_b_exceeded": {"condition": b_points > 22 or b_points == 22 and b_number > 2,
                                   "do": b_exactly_lose,
-                                  "end_message": "\n*Результат:* Выигрыш _(Перебор у Банкира)_"}}.items():
+                                  "end_message": "\n*Результат:* 🎉Выигрыш _(Перебор у Банкира)_"}}.items():
         if data["condition"]:
             return situation, data["do"], data["end_message"]
 
@@ -470,7 +470,7 @@ def finish(update, context):
     sql.update_twenty_one_data(data=context.user_data["data"], prize=context.user_data["prize"])
     context.bot.edit_message_text(chat_id=telegram_id,
                                   message_id=game_message_id,
-                                  text=game_message + "\n*Результат:* Проигрыш _(выход из Игры)_",
+                                  text=game_message + "\n*Результат:* ☠Проигрыш _(выход из Игры)_",
                                   reply_markup=None,
                                   parse_mode=ParseMode.MARKDOWN)
     context.job_queue.run_once(callback=job_back_to_twenty_one_menu, when=1.5, context=telegram_id)
@@ -478,7 +478,7 @@ def finish(update, context):
 
 
 def game(update, context):
-    if context.user_data["in_flag_game"]:
+    if context.user_data["in_game_flag"]:
         return state.TWENTY_ONE
     try:
         chips_bet = int(update.message.text)
@@ -498,17 +498,22 @@ def game(update, context):
         else:
             context.user_data["in_game_flag"] = True
             context.user_data["BET"] = chips_bet
-            update.message.reply_markdown(text=text.BET_IS_ACCEPTED, reply_markup=menu.no_menu())
-            context.job_queue.run_once(
-                callback=job_first_cards_message,
-                when=2,
-                context=(update.message.chat.id,
-                         context.user_data["data"][1],
-                         context.user_data["BET"],
-                         context.user_data['BANKER'],
-                         context.user_data['YOU'],
-                         context.user_data["BOTTOM_CARD"],
-                         context.user_data['entry_message_id']))
+            update.message.reply_markdown(text=text.BET_IS_ACCEPTED)
+            try:
+                context.job_queue.run_once(
+                    callback=job_first_cards_message,
+                    when=2,
+                    context=(update.message.chat.id,
+                             context.user_data["data"][1],
+                             context.user_data["BET"],
+                             context.user_data['BANKER'],
+                             context.user_data['YOU'],
+                             context.user_data["BOTTOM_CARD"],
+                             context.user_data['entry_message_id']))
+            except TelegramError as mysterious_error:
+                for developer in sql.get_dev_id():
+                    context.bot.send_message(chat_id=developer,
+                                             text=mysterious_error)
             return state.TWENTY_ONE
 
 
