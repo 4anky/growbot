@@ -194,7 +194,7 @@ def more_situations(context):
                              "game_message": game_message,
                              "reply_markup": menu.inline_show(menu=text.INLINE_MAIN,
                                                               patterns=text.MAIN_PATTERNS)},
-            "exceeded": {"condition": (you['points'] > 22 or you['points'] == 22 and you_number > 2),
+            "exceeded": {"condition": you['points'] > 22 or you['points'] == 22 and you_number > 2,
                          "do": do_exceeded,
                          "game_message": game_message + f"\n*Результат:* ☠Проигрыш _(Перебор)_",
                          "reply_markup": None},
@@ -467,7 +467,7 @@ def finish(update, context):
                                             you_points=you['points'],
                                             bottom=bottom_card)
     do_exceeded(context)
-    sql.update_twenty_one_data(data=context.user_data["data"], prize=context.user_data["prize"])
+    sql.update_twenty_one_data(data=context.user_data["data"][:-1], prize=context.user_data["prize"])
     context.bot.edit_message_text(chat_id=telegram_id,
                                   message_id=game_message_id,
                                   text=game_message + "\n*Результат:* ☠Проигрыш _(выход из Игры)_",
