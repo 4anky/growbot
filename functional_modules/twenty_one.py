@@ -40,7 +40,8 @@ def job_first_cards_message(context):
                                             you_points=you['points'],
                                             bottom=bottom_card),
         reply_markup=menu.inline_show(menu=keyboard, patterns=patterns),
-        parse_mode=ParseMode.MARKDOWN)
+        parse_mode=ParseMode.MARKDOWN,
+        timeout=10)
 
 
 def job_opening_banker_cards(context):
@@ -93,16 +94,16 @@ def entry(update, context):
     context.user_data["data"][1] += 1
     context.user_data["BANKER"], context.user_data["YOU"], context.user_data["BOTTOM_CARD"] = start_of_game()
     banker, you, bottom_card = context.user_data["BANKER"], context.user_data["YOU"], context.user_data["BOTTOM_CARD"]
-    update.message.reply_markdown(
-        text=(text.ENTRY_MESSAGE.format(b_cards=banker['deck'][0],
-                                        b_points=banker['points'],
-                                        you_cards=you['deck'][0],
-                                        you_points=you['points'],
-                                        bottom=bottom_card,
-                                        balance=text.three_digits(n=context.user_data['data'][12]))
-              + text.TO_ENTER_BET),
-        reply_markup=menu.no_menu())
-    context.user_data["entry_message_id"] = update.message.message_id + 1
+    entry_message = update.message.reply_markdown(
+                            text=(text.ENTRY_MESSAGE.format(b_cards=banker['deck'][0],
+                                                            b_points=banker['points'],
+                                                            you_cards=you['deck'][0],
+                                                            you_points=you['points'],
+                                                            bottom=bottom_card,
+                                                            balance=text.three_digits(n=context.user_data['data'][12]))
+                                  + text.TO_ENTER_BET),
+                            reply_markup=menu.no_menu())
+    context.user_data["entry_message_id"] = entry_message["message_id"]
     return state.TWENTY_ONE_ENTER_BET
 
 

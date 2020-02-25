@@ -7,9 +7,9 @@ def three_digits(n):
 
 # Bot
 
-VERSION_NUMBER = "v0.1.16."
+VERSION_NUMBER = "v0.1.17."
 VERSION = ("🌳*Weed Grow*🌳\n_{n}_\n\n"
-           + "• Налажена кнопка выхода из игры Двадцать одно").format(n=VERSION_NUMBER)
+           + "• Исправлена ошибка ввода ставки в игре Двадцать одно").format(n=VERSION_NUMBER)
 
 # Train
 
